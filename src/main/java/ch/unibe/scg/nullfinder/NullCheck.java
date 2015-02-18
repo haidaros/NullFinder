@@ -14,4 +14,9 @@ public class NullCheck {
 		return node;
 	}
 
+	@Override
+	public String toString() {
+		return this.node.getParentNode().toString();
+	}
+
 }

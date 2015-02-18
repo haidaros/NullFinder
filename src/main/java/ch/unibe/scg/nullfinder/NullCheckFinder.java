@@ -16,20 +16,20 @@ public class NullCheckFinder {
 
 	public static class NullCheckVisitor extends VoidVisitorAdapter<Object> {
 
-		Collection<NullCheck> nullChecks;
+		Collection<NullCheck> checks;
 
 		public NullCheckVisitor() {
-			this.nullChecks = new ArrayList<NullCheck>();
+			this.checks = new ArrayList<NullCheck>();
 		}
 
 		public Collection<NullCheck> getNullChecks() {
-			return this.nullChecks;
+			return this.checks;
 		}
 
 		@Override
 		public void visit(NullLiteralExpr node, Object argument) {
 			if (node.getParentNode() instanceof BinaryExpr) {
-				this.nullChecks.add(new NullCheck(node));
+				this.checks.add(new NullCheck(node));
 			}
 		}
 

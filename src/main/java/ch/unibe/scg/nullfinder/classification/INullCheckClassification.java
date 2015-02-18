@@ -10,10 +10,10 @@ public interface INullCheckClassification {
 	/**
 	 * Checks whether or not the specified null check can be classified.
 	 * 
-	 * @param nullCheck
+	 * @param check
 	 * @return true if the specified null check can be classified, false
 	 *         otherwise
 	 */
-	boolean accepts(NullCheck nullCheck);
+	boolean accepts(NullCheck check);
 
 }

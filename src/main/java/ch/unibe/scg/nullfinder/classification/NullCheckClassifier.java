@@ -24,17 +24,17 @@ public class NullCheckClassifier {
 		}
 	}
 
-	public INullCheckClassification classify(NullCheck nullCheck)
+	public INullCheckClassification classify(NullCheck check)
 			throws InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException,
 			UnclassifiableNullCheckException {
 		for (Constructor<? extends INullCheckClassification> constructor : this.constructors) {
 			INullCheckClassification classification = constructor.newInstance();
-			if (classification.accepts(nullCheck)) {
+			if (classification.accepts(check)) {
 				return classification;
 			}
 		}
-		throw new UnclassifiableNullCheckException();
+		throw new UnclassifiableNullCheckException(check);
 	}
 
 }

@@ -9,8 +9,8 @@ public class ArrayAccessNullCheckClassification implements
 		INullCheckClassification {
 
 	@Override
-	public boolean accepts(NullCheck nullCheck) {
-		BinaryExpr expression = (BinaryExpr) nullCheck.getNode()
+	public boolean accepts(NullCheck check) {
+		BinaryExpr expression = (BinaryExpr) check.getNode()
 				.getParentNode();
 		return expression.getLeft() instanceof ArrayAccessExpr
 				|| expression.getRight() instanceof ArrayAccessExpr;

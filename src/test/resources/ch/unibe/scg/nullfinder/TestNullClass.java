@@ -10,9 +10,23 @@ public class TestNullClass {
 		}
 	}
 
-	public void checkFieldAccess() {
-		String[] array = new String[0]; 
+	public void checkArrayAccess() {
+		String[] array = new String[0];
 		if (array[0] == null) {
+			// noop
+		}
+	}
+
+	public void checkEnclosed() {
+		Object value;
+		if ((value = this) != null) {
+			// noop
+		}
+	}
+
+	public void checkCast() {
+		Object value = this;
+		if ((String) value != null) {
 			// noop
 		}
 	}

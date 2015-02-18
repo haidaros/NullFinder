@@ -17,9 +17,9 @@ public class NullCheckCollector {
 	public void collect(Path path, NullCheck check,
 			INullCheckClassification classification) throws IOException {
 		String line = String.format("%s\t%d\t%d\t%s\t%s\n", path.toString(),
-				check.getNode().getBeginLine(), check.getNode().getBeginLine(),
-				check.getNode().getParentNode().toString(), classification
-						.getClass().getName());
+				check.getNode().getBeginLine(), check.getNode()
+						.getBeginColumn(), check.getNode().getParentNode()
+						.toString(), classification.getClass().getName());
 		this.stream.write(line.getBytes());
 	}
 }
