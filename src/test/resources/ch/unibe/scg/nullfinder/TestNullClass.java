@@ -10,6 +10,13 @@ public class TestNullClass {
 		}
 	}
 
+	public void checkFieldAccess() {
+		String[] array = new String[0]; 
+		if (array[0] == null) {
+			// noop
+		}
+	}
+
 	public void checkName() {
 		Object name = this.getNull();
 		if (name == null) {

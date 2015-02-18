@@ -1,7 +1,7 @@
 package ch.unibe.scg.nullfinder;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -35,9 +35,9 @@ public class NullCheckFinder {
 
 	}
 
-	public Collection<NullCheck> findNullChecks(File file)
-			throws ParseException, IOException {
-		CompilationUnit compilationUnit = JavaParser.parse(file);
+	public Collection<NullCheck> find(Path path) throws ParseException,
+			IOException {
+		CompilationUnit compilationUnit = JavaParser.parse(path.toFile());
 		NullCheckVisitor visitor = new NullCheckVisitor();
 		visitor.visit(compilationUnit, null);
 		return visitor.getNullChecks();

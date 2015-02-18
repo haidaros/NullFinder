@@ -1,7 +1,7 @@
 package ch.unibe.scg.nullfinder;
 
-import java.io.File;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Collection;
 
 import org.junit.Assert;
@@ -17,13 +17,12 @@ public class NullCheckFinderTest {
 	public void setUp() throws Exception {
 		this.nullCheckFinder = new NullCheckFinder();
 		URL url = this.getClass().getResource("TestNullClass.java");
-		File file = new File(url.getFile());
-		this.nullChecks = this.nullCheckFinder.findNullChecks(file);
+		this.nullChecks = this.nullCheckFinder.find(Paths.get(url.toURI()));
 	}
 
 	@Test
 	public void testSetUp() {
-		Assert.assertEquals(this.nullChecks.size(), 3);
+		Assert.assertEquals(this.nullChecks.size(), 4);
 	}
 
 	@Test
@@ -31,6 +30,14 @@ public class NullCheckFinderTest {
 		boolean found = this.nullChecks.stream().anyMatch(
 				nullCheck -> nullCheck.getNode().getParentNode().toString()
 						.equals("this.field == null"));
+		Assert.assertTrue(found);
+	}
+
+	@Test
+	public void testArrayAccessNullCheck() {
+		boolean found = this.nullChecks.stream().anyMatch(
+				nullCheck -> nullCheck.getNode().getParentNode().toString()
+						.equals("array[0] == null"));
 		Assert.assertTrue(found);
 	}
 
