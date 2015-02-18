@@ -2,30 +2,23 @@ package ch.unibe.scg.nullfinder;
 
 public class TestNullClass {
 
-	public static Object classVariable;
-	public Object instanceVariable;
+	public Object field;
 
-	public void checkClassVariable() {
-		if (TestNullClass.classVariable == null) {
+	public void checkFieldAccess() {
+		if (this.field == null) {
 			// noop
 		}
 	}
 
-	public void checkInstanceVariable() {
-		if (this.instanceVariable == null) {
+	public void checkName() {
+		Object name = this.getNull();
+		if (name == null) {
 			// noop
 		}
 	}
 
-	public void checkParameter(Object parameter) {
-		if (parameter == null) {
-			// noop
-		}
-	}
-
-	public void checkReturnedValue() {
-		Object returnedValue = this.getNull();
-		if (returnedValue == null) {
+	public void checkMethodCallValue() {
+		if (this.getNull() == null) {
 			// noop
 		}
 	}
