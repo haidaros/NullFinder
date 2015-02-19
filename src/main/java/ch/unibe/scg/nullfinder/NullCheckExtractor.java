@@ -1,108 +1,62 @@
 package ch.unibe.scg.nullfinder;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.stream.Stream;
 
 import ch.unibe.scg.nullfinder.classification.INullCheckClassification;
-import ch.unibe.scg.nullfinder.classification.NullCheckClassifier;
-import ch.unibe.scg.nullfinder.classification.UnclassifiableNullCheckException;
 
-import com.github.javaparser.ParseException;
 import com.github.javaparser.TokenMgrError;
 
 public class NullCheckExtractor {
 
-	public static class NullCheckVisitor extends SimpleFileVisitor<Path> {
+	private NullCheckSelector selector;
+	private NullCheckClassifier classifier;
+	private NullCheckClassificationStringifier stringifier;
 
-		private NullCheckFinder finder;
-		private NullCheckClassifier classifier;
-		private NullCheckCollector collector;
-		private int filesAccessed;
-		private int filesProcessed;
-
-		public NullCheckVisitor(NullCheckFinder finder,
-				NullCheckClassifier classifier, NullCheckCollector collector) {
-			super();
-			this.finder = finder;
-			this.classifier = classifier;
-			this.collector = collector;
-			this.filesAccessed = 0;
-			this.filesProcessed = 0;
-		}
-
-		@Override
-		public FileVisitResult visitFile(Path path, BasicFileAttributes attrs)
-				throws IOException {
-			if (!path.getFileName().toString().endsWith(".java")) {
-				return FileVisitResult.CONTINUE;
-			}
-			this.filesAccessed = this.filesAccessed + 1;
-			Collection<NullCheck> checks = Collections.EMPTY_SET;
-			try {
-				checks = this.finder.find(path);
-			} catch (TokenMgrError e) {
-				System.err.println(String.format("ERROR Could not parse %s",
-						path.toString()));
-				e.printStackTrace();
-				return FileVisitResult.CONTINUE;
-			} catch (ParseException e) {
-				System.err.println(String.format("ERROR Could not parse %s",
-						path.toString()));
-				e.printStackTrace();
-				return FileVisitResult.CONTINUE;
-			} catch (Exception e) {
-				System.err.println(String.format(
-						"ERROR Something went terribly wrong while parsing %s",
-						path.toString()));
-				e.printStackTrace();
-				return FileVisitResult.CONTINUE;
-			}
-			for (NullCheck check : checks) {
-				try {
-					INullCheckClassification classification = this.classifier
-							.classify(check);
-					this.collector.collect(path, check, classification);
-				} catch (InstantiationException | IllegalAccessException
-						| IllegalArgumentException | InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (UnclassifiableNullCheckException e) {
-					System.err.println(String.format("ERROR %s %s:%d:%d", e
-							.toString(), path.toString(), check.getNode()
-							.getBeginLine(), check.getNode().getBeginColumn()));
-				}
-			}
-			this.filesProcessed = this.filesProcessed + 1;
-			return FileVisitResult.CONTINUE;
-		}
-
-		public int getFilesAccessed() {
-			return this.filesAccessed;
-		}
-
-		public int getFilesProcessed() {
-			return this.filesProcessed;
-		}
-
+	public NullCheckExtractor() throws NoSuchMethodException, SecurityException {
+		this.selector = new NullCheckSelector();
+		this.classifier = new NullCheckClassifier();
+		this.stringifier = new NullCheckClassificationStringifier();
 	}
 
-	public void extract(Path file) throws IOException, NoSuchMethodException,
-			SecurityException {
-		NullCheckFinder finder = new NullCheckFinder();
-		NullCheckClassifier classifier = new NullCheckClassifier();
-		NullCheckCollector collector = new NullCheckCollector(System.out);
-		NullCheckVisitor visitor = new NullCheckVisitor(finder, classifier,
-				collector);
-		Files.walkFileTree(file, visitor);
-		System.out.println(String.format(
-				"FINISHED accessed %d, processed %d files",
-				visitor.getFilesAccessed(), visitor.getFilesProcessed()));
+	public Stream<String> extract(Path root) throws IOException,
+			NoSuchMethodException, SecurityException {
+		return Files.walk(root).filter(this::isJavaSource).parallel()
+				.flatMap(this::selectAll).flatMap(this::classifyAll)
+				.map(this::stringify);
 	}
+
+	private boolean isJavaSource(Path path) {
+		return path.getFileName().toString().endsWith(".java");
+	}
+
+	private Stream<NullCheck> selectAll(Path path) {
+		try {
+			return this.selector.selectAll(path);
+		} catch (Exception exception) {
+			System.err.println(String.format("ERROR %s while selecting %s",
+					exception.toString(), path.toString()));
+		} catch (TokenMgrError error) {
+			System.err.println(String.format("ERROR %s while selecting %s",
+					error.toString(), path.toString()));
+		}
+		return Stream.of();
+	}
+
+	private Stream<INullCheckClassification> classifyAll(NullCheck check) {
+		try {
+			return this.classifier.classifyAll(check);
+		} catch (Exception exception) {
+			System.err.println(String.format("ERROR %s while classifying %s",
+					exception.toString(), check.toString()));
+		}
+		return Stream.of();
+	}
+
+	private String stringify(INullCheckClassification classification) {
+		return this.stringifier.stringify(classification);
+	}
+
 }

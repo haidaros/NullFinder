@@ -9,7 +9,11 @@ public class Main {
 			NoSuchMethodException, SecurityException {
 		String root = arguments[0];
 		NullCheckExtractor extractor = new NullCheckExtractor();
-		extractor.extract(Paths.get(root));
+		long before = System.currentTimeMillis();
+		extractor.extract(Paths.get(root)).forEach(System.out::println);
+		long after = System.currentTimeMillis();
+		System.out.println(String.format("DONE in %d seconds",
+				(after - before) / 1000));
 	}
 
 }

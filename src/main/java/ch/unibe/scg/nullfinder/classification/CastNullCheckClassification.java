@@ -5,7 +5,12 @@ import ch.unibe.scg.nullfinder.NullCheck;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.CastExpr;
 
-public class CastNullCheckClassification implements INullCheckClassification {
+public class CastNullCheckClassification extends
+		AbstractNullCheckClassification {
+
+	public CastNullCheckClassification(NullCheck check) {
+		super(check);
+	}
 
 	@Override
 	public boolean accepts(NullCheck check) {

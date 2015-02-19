@@ -3,7 +3,7 @@ package ch.unibe.scg.nullfinder.classification;
 import ch.unibe.scg.nullfinder.NullCheck;
 
 /**
- * Must implement an empty constructor.
+ * Must implement a constructor with a null check.
  */
 public interface INullCheckClassification {
 
@@ -15,5 +15,12 @@ public interface INullCheckClassification {
 	 *         otherwise
 	 */
 	boolean accepts(NullCheck check);
+
+	/**
+	 * Gets the null check.
+	 * 
+	 * @return The null check.
+	 */
+	NullCheck getNullCheck();
 
 }
