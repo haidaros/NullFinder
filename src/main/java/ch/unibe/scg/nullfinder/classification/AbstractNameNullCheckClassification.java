@@ -5,10 +5,10 @@ import ch.unibe.scg.nullfinder.NullCheck;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 
-public class NameNullCheckClassification extends
+public abstract class AbstractNameNullCheckClassification extends
 		AbstractNullCheckClassification {
 
-	public NameNullCheckClassification(NullCheck check) {
+	public AbstractNameNullCheckClassification(NullCheck check) {
 		super(check);
 	}
 

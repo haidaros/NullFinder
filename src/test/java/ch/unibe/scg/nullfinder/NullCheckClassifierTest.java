@@ -18,7 +18,7 @@ import ch.unibe.scg.nullfinder.classification.EnclosedNullCheckClassification;
 import ch.unibe.scg.nullfinder.classification.FieldAccessNullCheckClassification;
 import ch.unibe.scg.nullfinder.classification.INullCheckClassification;
 import ch.unibe.scg.nullfinder.classification.MethodCallNullCheckClassification;
-import ch.unibe.scg.nullfinder.classification.NameNullCheckClassification;
+import ch.unibe.scg.nullfinder.classification.AbstractNameNullCheckClassification;
 import ch.unibe.scg.nullfinder.classification.UnclassifiableNullCheckException;
 
 public class NullCheckClassifierTest {
@@ -107,7 +107,7 @@ public class NullCheckClassifierTest {
 		Set<INullCheckClassification> classifications = this.classifier
 				.classifyAll(check).collect(Collectors.toSet());
 		Assert.assertEquals(classifications.size(), 1);
-		Assert.assertTrue(classifications.iterator().next() instanceof NameNullCheckClassification);
+		Assert.assertTrue(classifications.iterator().next() instanceof AbstractNameNullCheckClassification);
 	}
 
 	@Test
