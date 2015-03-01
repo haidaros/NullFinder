@@ -1,5 +1,8 @@
 package ch.unibe.scg.nullfinder.classification;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.unibe.scg.nullfinder.NullCheck;
 
 import com.github.javaparser.ast.Node;
@@ -11,6 +14,7 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ForStmt;
 
 public class LocalVariableNameNullCheckClassification extends
 		AbstractNameNullCheckClassification {
@@ -36,7 +40,17 @@ public class LocalVariableNameNullCheckClassification extends
 		Node stop = node;
 		// haha, a null check!
 		while (current != null) {
-			for (Node child : current.getChildrenNodes()) {
+			List<Node> children = current.getChildrenNodes();
+			if (current instanceof ForStmt) {
+				// reorder children
+				ForStmt forStatement = (ForStmt) current;
+				children = new ArrayList<>();
+				children.addAll(forStatement.getInit());
+				children.add(forStatement.getCompare());
+				children.addAll(forStatement.getUpdate());
+				children.add(forStatement.getBody());
+			}
+			for (Node child : children) {
 				if (child == stop) {
 					break;
 				}

@@ -7,8 +7,6 @@ import java.util.stream.Stream;
 
 import ch.unibe.scg.nullfinder.classification.INullCheckClassification;
 
-import com.github.javaparser.TokenMgrError;
-
 public class NullCheckExtractor {
 
 	private NullCheckSelector selector;
@@ -35,12 +33,8 @@ public class NullCheckExtractor {
 	private Stream<NullCheck> selectAll(Path path) {
 		try {
 			return this.selector.selectAll(path);
-		} catch (Exception exception) {
-			System.err.println(String.format("ERROR %s while selecting %s",
-					exception.toString(), path.toString()));
-		} catch (TokenMgrError error) {
-			System.err.println(String.format("ERROR %s while selecting %s",
-					error.toString(), path.toString()));
+		} catch (Throwable throwable) {
+			throwable.printStackTrace();
 		}
 		return Stream.of();
 	}
@@ -48,9 +42,8 @@ public class NullCheckExtractor {
 	private Stream<INullCheckClassification> classifyAll(NullCheck check) {
 		try {
 			return this.classifier.classifyAll(check);
-		} catch (Exception exception) {
-			System.err.println(String.format("ERROR %s while classifying %s",
-					exception.toString(), check.toString()));
+		} catch (Throwable throwable) {
+			throwable.printStackTrace();
 		}
 		return Stream.of();
 	}

@@ -57,9 +57,8 @@ public class Main {
 		try {
 			writer.write(line);
 			writer.newLine();
-		} catch (IOException exception) {
-			System.err.println(String.format("ERROR %s while writing %s",
-					exception.toString(), line));
+		} catch (Throwable throwable) {
+			throwable.printStackTrace();
 		}
 	}
 
@@ -67,9 +66,8 @@ public class Main {
 		try {
 			NullCheckExtractor extractor = new NullCheckExtractor();
 			return extractor.extract(path);
-		} catch (NoSuchMethodException | SecurityException | IOException exception) {
-			System.err.println(String.format("ERROR %s while extracting %s",
-					exception.toString(), path.toString()));
+		} catch (Throwable throwable) {
+			throwable.printStackTrace();
 		}
 		return Stream.of();
 	}

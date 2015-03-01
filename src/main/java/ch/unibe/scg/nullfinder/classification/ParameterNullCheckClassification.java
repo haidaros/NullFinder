@@ -45,8 +45,10 @@ public class ParameterNullCheckClassification extends
 				}
 			} else if (current instanceof ConstructorDeclaration) {
 				ConstructorDeclaration constructor = (ConstructorDeclaration) current;
-				if (this.declares(constructor.getParameters(),
-						suspect.getName())) {
+				// parameters are null for constructors taking no arguments
+				if (constructor.getParameters() != null
+						&& this.declares(constructor.getParameters(),
+								suspect.getName())) {
 					return true;
 				}
 			}

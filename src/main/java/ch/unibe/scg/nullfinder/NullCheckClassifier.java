@@ -52,8 +52,7 @@ public class NullCheckClassifier {
 			return constructor.newInstance(check);
 		} catch (InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException exception) {
-			System.err.println(String.format("ERROR %s while instantiating %s",
-					exception.toString(), constructor.toString()));
+			exception.printStackTrace();
 		}
 		return new NullNullCheckClassification(check);
 	}
