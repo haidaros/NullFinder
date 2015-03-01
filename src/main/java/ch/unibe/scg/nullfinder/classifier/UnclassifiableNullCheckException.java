@@ -1,4 +1,4 @@
-package ch.unibe.scg.nullfinder.classification;
+package ch.unibe.scg.nullfinder.classifier;
 
 import ch.unibe.scg.nullfinder.NullCheck;
 

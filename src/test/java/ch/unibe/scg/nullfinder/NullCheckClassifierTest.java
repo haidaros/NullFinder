@@ -12,14 +12,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.unibe.scg.nullfinder.classification.ArrayAccessNullCheckClassification;
-import ch.unibe.scg.nullfinder.classification.CastNullCheckClassification;
-import ch.unibe.scg.nullfinder.classification.EnclosedNullCheckClassification;
-import ch.unibe.scg.nullfinder.classification.FieldAccessNullCheckClassification;
-import ch.unibe.scg.nullfinder.classification.INullCheckClassification;
-import ch.unibe.scg.nullfinder.classification.MethodCallNullCheckClassification;
-import ch.unibe.scg.nullfinder.classification.AbstractNameNullCheckClassification;
-import ch.unibe.scg.nullfinder.classification.UnclassifiableNullCheckException;
+import ch.unibe.scg.nullfinder.classifier.AbstractNameNullCheckClassifier;
+import ch.unibe.scg.nullfinder.classifier.ArrayAccessNullCheckClassifier;
+import ch.unibe.scg.nullfinder.classifier.CastNullCheckClassifier;
+import ch.unibe.scg.nullfinder.classifier.EnclosedNullCheckClassifier;
+import ch.unibe.scg.nullfinder.classifier.FieldAccessNullCheckClassifier;
+import ch.unibe.scg.nullfinder.classifier.MethodCallNullCheckClassifier;
+import ch.unibe.scg.nullfinder.classifier.UnclassifiableNullCheckException;
 
 public class NullCheckClassifierTest {
 
@@ -44,10 +43,10 @@ public class NullCheckClassifierTest {
 						.equals("this.field == null")).findFirst();
 		Assert.assertTrue(match.isPresent());
 		NullCheck check = match.get();
-		Set<INullCheckClassification> classifications = this.classifier
+		Set<NullCheckClassification> classifications = this.classifier
 				.classifyAll(check).collect(Collectors.toSet());
 		Assert.assertEquals(classifications.size(), 1);
-		Assert.assertTrue(classifications.iterator().next() instanceof FieldAccessNullCheckClassification);
+		Assert.assertTrue(classifications.iterator().next().getClassifier() instanceof FieldAccessNullCheckClassifier);
 	}
 
 	@Test
@@ -59,10 +58,10 @@ public class NullCheckClassifierTest {
 						.equals("array[0] == null")).findFirst();
 		Assert.assertTrue(match.isPresent());
 		NullCheck check = match.get();
-		Set<INullCheckClassification> classifications = this.classifier
+		Set<NullCheckClassification> classifications = this.classifier
 				.classifyAll(check).collect(Collectors.toSet());
 		Assert.assertEquals(classifications.size(), 1);
-		Assert.assertTrue(classifications.iterator().next() instanceof ArrayAccessNullCheckClassification);
+		Assert.assertTrue(classifications.iterator().next().getClassifier() instanceof ArrayAccessNullCheckClassifier);
 	}
 
 	@Test
@@ -74,10 +73,10 @@ public class NullCheckClassifierTest {
 						.equals("(value = this) != null")).findFirst();
 		Assert.assertTrue(match.isPresent());
 		NullCheck check = match.get();
-		Set<INullCheckClassification> classifications = this.classifier
+		Set<NullCheckClassification> classifications = this.classifier
 				.classifyAll(check).collect(Collectors.toSet());
 		Assert.assertEquals(classifications.size(), 1);
-		Assert.assertTrue(classifications.iterator().next() instanceof EnclosedNullCheckClassification);
+		Assert.assertTrue(classifications.iterator().next().getClassifier() instanceof EnclosedNullCheckClassifier);
 	}
 
 	@Test
@@ -89,10 +88,10 @@ public class NullCheckClassifierTest {
 						.equals("(String) value != null")).findFirst();
 		Assert.assertTrue(match.isPresent());
 		NullCheck check = match.get();
-		Set<INullCheckClassification> classifications = this.classifier
+		Set<NullCheckClassification> classifications = this.classifier
 				.classifyAll(check).collect(Collectors.toSet());
 		Assert.assertEquals(classifications.size(), 1);
-		Assert.assertTrue(classifications.iterator().next() instanceof CastNullCheckClassification);
+		Assert.assertTrue(classifications.iterator().next().getClassifier() instanceof CastNullCheckClassifier);
 	}
 
 	@Test
@@ -104,10 +103,10 @@ public class NullCheckClassifierTest {
 						.equals("name == null")).findFirst();
 		Assert.assertTrue(match.isPresent());
 		NullCheck check = match.get();
-		Set<INullCheckClassification> classifications = this.classifier
+		Set<NullCheckClassification> classifications = this.classifier
 				.classifyAll(check).collect(Collectors.toSet());
 		Assert.assertEquals(classifications.size(), 1);
-		Assert.assertTrue(classifications.iterator().next() instanceof AbstractNameNullCheckClassification);
+		Assert.assertTrue(classifications.iterator().next().getClassifier() instanceof AbstractNameNullCheckClassifier);
 	}
 
 	@Test
@@ -119,10 +118,10 @@ public class NullCheckClassifierTest {
 						.equals("this.getNull() == null")).findFirst();
 		Assert.assertTrue(match.isPresent());
 		NullCheck check = match.get();
-		Set<INullCheckClassification> classifications = this.classifier
+		Set<NullCheckClassification> classifications = this.classifier
 				.classifyAll(check).collect(Collectors.toSet());
 		Assert.assertEquals(classifications.size(), 1);
-		Assert.assertTrue(classifications.iterator().next() instanceof MethodCallNullCheckClassification);
+		Assert.assertTrue(classifications.iterator().next().getClassifier() instanceof MethodCallNullCheckClassifier);
 	}
 
 }

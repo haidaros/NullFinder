@@ -1,4 +1,4 @@
-package ch.unibe.scg.nullfinder.classification;
+package ch.unibe.scg.nullfinder.classifier;
 
 import java.util.List;
 
@@ -12,12 +12,8 @@ import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 
-public class ParameterNullCheckClassification extends
-		AbstractNameNullCheckClassification {
-
-	public ParameterNullCheckClassification(NullCheck check) {
-		super(check);
-	}
+public class ParameterNullCheckClassifier extends
+		AbstractNameNullCheckClassifier {
 
 	@Override
 	public boolean accepts(NullCheck check) {

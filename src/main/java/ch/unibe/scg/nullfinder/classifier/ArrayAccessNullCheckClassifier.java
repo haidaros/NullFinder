@@ -1,16 +1,11 @@
-package ch.unibe.scg.nullfinder.classification;
+package ch.unibe.scg.nullfinder.classifier;
 
 import ch.unibe.scg.nullfinder.NullCheck;
 
 import com.github.javaparser.ast.expr.ArrayAccessExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
 
-public class ArrayAccessNullCheckClassification extends
-		AbstractNullCheckClassification {
-
-	public ArrayAccessNullCheckClassification(NullCheck check) {
-		super(check);
-	}
+public class ArrayAccessNullCheckClassifier implements INullCheckClassifier {
 
 	@Override
 	public boolean accepts(NullCheck check) {

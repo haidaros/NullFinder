@@ -1,4 +1,4 @@
-package ch.unibe.scg.nullfinder.classification;
+package ch.unibe.scg.nullfinder.classifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +16,8 @@ import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 
-public class LocalVariableNameNullCheckClassification extends
-		AbstractNameNullCheckClassification {
-
-	public LocalVariableNameNullCheckClassification(NullCheck check) {
-		super(check);
-	}
+public class LocalVariableNameNullCheckClassifier extends
+		AbstractNameNullCheckClassifier {
 
 	@Override
 	public boolean accepts(NullCheck check) {
