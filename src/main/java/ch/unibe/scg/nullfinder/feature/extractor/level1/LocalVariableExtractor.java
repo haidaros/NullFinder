@@ -38,9 +38,15 @@ public class LocalVariableExtractor extends AbstractDeclarationExtractor {
 				// reorder children
 				ForStmt forStatement = (ForStmt) current;
 				children = new ArrayList<>();
-				children.addAll(forStatement.getInit());
+				if (forStatement.getInit() != null) {
+					// fuck you...
+					children.addAll(forStatement.getInit());
+				}
 				children.add(forStatement.getCompare());
-				children.addAll(forStatement.getUpdate());
+				if (forStatement.getUpdate() != null) {
+					// ...and fuck you
+					children.addAll(forStatement.getUpdate());
+				}
 				children.add(forStatement.getBody());
 			}
 			for (Node child : children) {
