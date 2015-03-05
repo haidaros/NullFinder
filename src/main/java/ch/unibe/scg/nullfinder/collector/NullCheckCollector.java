@@ -1,10 +1,9 @@
-package ch.unibe.scg.nullfinder.streamer;
+package ch.unibe.scg.nullfinder.collector;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.stream.Stream;
+import java.util.HashSet;
+import java.util.Set;
 
 import ch.unibe.scg.nullfinder.NullCheck;
 
@@ -15,18 +14,18 @@ import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
-public class NullCheckStreamer implements IStreamer<Path, NullCheck> {
+public class NullCheckCollector implements ICollector<Path, Set<NullCheck>> {
 
 	public static class NullCheckVisitor extends VoidVisitorAdapter<Path> {
 
-		protected Collection<NullCheck> checks;
+		protected Set<NullCheck> checks;
 
 		public NullCheckVisitor() {
 			super();
-			this.checks = new ArrayList<>();
+			this.checks = new HashSet<>();
 		}
 
-		public Collection<NullCheck> getNullChecks() {
+		public Set<NullCheck> getNullChecks() {
 			return this.checks;
 		}
 
@@ -40,12 +39,11 @@ public class NullCheckStreamer implements IStreamer<Path, NullCheck> {
 	}
 
 	@Override
-	public Stream<NullCheck> stream(Path path) throws ParseException,
-			IOException {
+	public Set<NullCheck> collect(Path path) throws ParseException, IOException {
 		CompilationUnit compilationUnit = JavaParser.parse(path.toFile());
 		NullCheckVisitor visitor = new NullCheckVisitor();
 		visitor.visit(compilationUnit, path);
-		return visitor.getNullChecks().stream();
+		return visitor.getNullChecks();
 	}
 
 }

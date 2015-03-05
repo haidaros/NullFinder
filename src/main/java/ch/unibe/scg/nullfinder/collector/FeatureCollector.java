@@ -1,4 +1,4 @@
-package ch.unibe.scg.nullfinder.streamer;
+package ch.unibe.scg.nullfinder.collector;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.stream.Stream;
 
 import org.reflections.Reflections;
 
@@ -15,11 +14,11 @@ import ch.unibe.scg.nullfinder.feature.IFeature;
 import ch.unibe.scg.nullfinder.feature.extractor.IExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 
-public class FeatureStreamer implements IStreamer<NullCheck, IFeature> {
+public class FeatureCollector implements ICollector<NullCheck, Set<IFeature>> {
 
 	protected SortedMap<Integer, Set<IExtractor>> extractors;
 
-	public FeatureStreamer() throws NoSuchMethodException, SecurityException,
+	public FeatureCollector() throws NoSuchMethodException, SecurityException,
 			InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
 		this.extractors = new TreeMap<>();
@@ -41,8 +40,7 @@ public class FeatureStreamer implements IStreamer<NullCheck, IFeature> {
 	}
 
 	@Override
-	public Stream<IFeature> stream(NullCheck check)
-			throws UnextractableException {
+	public Set<IFeature> collect(NullCheck check) throws UnextractableException {
 		Set<IFeature> features = new HashSet<>();
 		for (Set<IExtractor> levelExtractors : this.extractors.values()) {
 			for (IExtractor extractor : levelExtractors) {
@@ -56,7 +54,7 @@ public class FeatureStreamer implements IStreamer<NullCheck, IFeature> {
 		if (features.isEmpty()) {
 			throw new UnextractableException(check);
 		}
-		return features.stream();
+		return features;
 	}
 
 }

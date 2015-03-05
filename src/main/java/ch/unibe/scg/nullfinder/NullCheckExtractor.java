@@ -6,31 +6,32 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import ch.unibe.scg.nullfinder.streamer.FeatureStreamer;
-import ch.unibe.scg.nullfinder.streamer.NullCheckClassificationStreamer;
-import ch.unibe.scg.nullfinder.streamer.NullCheckStreamer;
-import ch.unibe.scg.nullfinder.streamer.StringStreamer;
+import ch.unibe.scg.nullfinder.collector.FeatureCollector;
+import ch.unibe.scg.nullfinder.collector.NullCheckClassificationCollector;
+import ch.unibe.scg.nullfinder.collector.NullCheckCollector;
+import ch.unibe.scg.nullfinder.collector.StringCollector;
 
 public class NullCheckExtractor {
 
-	protected NullCheckStreamer checkStreamer;
-	protected NullCheckClassificationStreamer classificationStreamer;
-	protected StringStreamer stringStreamer;
+	protected NullCheckCollector checkCollector;
+	protected NullCheckClassificationCollector classificationCollector;
+	protected StringCollector stringCollector;
 
 	public NullCheckExtractor() throws NoSuchMethodException,
 			SecurityException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
-		this.checkStreamer = new NullCheckStreamer();
-		this.classificationStreamer = new NullCheckClassificationStreamer(
-				new FeatureStreamer());
-		this.stringStreamer = new StringStreamer();
+		this.checkCollector = new NullCheckCollector();
+		this.classificationCollector = new NullCheckClassificationCollector(
+				new FeatureCollector());
+		this.stringCollector = new StringCollector();
 	}
 
 	public Stream<String> extract(Path root) throws IOException,
 			NoSuchMethodException, SecurityException {
 		return Files.walk(root).filter(this::isJavaSource)
-				.flatMap(this::collectNullChecks).flatMap(this::collectNullCheckClassifications)
-				.flatMap(this::collectStrings);
+				.flatMap(this::collectNullChecks)
+				.flatMap(this::collectNullCheckClassifications)
+				.map(this::collectString);
 	}
 
 	protected boolean isJavaSource(Path path) {
@@ -39,24 +40,25 @@ public class NullCheckExtractor {
 
 	protected Stream<NullCheck> collectNullChecks(Path path) {
 		try {
-			return this.checkStreamer.stream(path);
+			return this.checkCollector.collect(path).stream();
 		} catch (Throwable throwable) {
 			throwable.printStackTrace();
 		}
 		return Stream.of();
 	}
 
-	protected Stream<NullCheckClassification> collectNullCheckClassifications(NullCheck check) {
+	protected Stream<NullCheckClassification> collectNullCheckClassifications(
+			NullCheck check) {
 		try {
-			return this.classificationStreamer.stream(check);
+			return Stream.of(this.classificationCollector.collect(check));
 		} catch (Throwable throwable) {
 			throwable.printStackTrace();
 		}
 		return Stream.of();
 	}
 
-	protected Stream<String> collectStrings(NullCheckClassification classification) {
-		return this.stringStreamer.stream(classification);
+	protected String collectString(NullCheckClassification classification) {
+		return this.stringCollector.collect(classification);
 	}
 
 }
