@@ -6,51 +6,57 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import ch.unibe.scg.nullfinder.streamer.FeatureStreamer;
+import ch.unibe.scg.nullfinder.streamer.NullCheckClassificationStreamer;
+import ch.unibe.scg.nullfinder.streamer.NullCheckStreamer;
+import ch.unibe.scg.nullfinder.streamer.StringStreamer;
+
 public class NullCheckExtractor {
 
-	private NullCheckSelector selector;
-	private NullCheckClassifier classifier;
-	private NullCheckClassificationStringifier stringifier;
+	protected NullCheckStreamer checkStreamer;
+	protected NullCheckClassificationStreamer classificationStreamer;
+	protected StringStreamer stringStreamer;
 
 	public NullCheckExtractor() throws NoSuchMethodException,
 			SecurityException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
-		this.selector = new NullCheckSelector();
-		this.classifier = new NullCheckClassifier();
-		this.stringifier = new NullCheckClassificationStringifier();
+		this.checkStreamer = new NullCheckStreamer();
+		this.classificationStreamer = new NullCheckClassificationStreamer(
+				new FeatureStreamer());
+		this.stringStreamer = new StringStreamer();
 	}
 
 	public Stream<String> extract(Path root) throws IOException,
 			NoSuchMethodException, SecurityException {
-		return Files.walk(root).filter(this::isJavaSource).parallel()
-				.flatMap(this::selectAll).flatMap(this::classifyAll)
-				.map(this::stringify);
+		return Files.walk(root).filter(this::isJavaSource)
+				.flatMap(this::collectNullChecks).flatMap(this::collectNullCheckClassifications)
+				.flatMap(this::collectStrings);
 	}
 
-	private boolean isJavaSource(Path path) {
+	protected boolean isJavaSource(Path path) {
 		return path.getFileName().toString().endsWith(".java");
 	}
 
-	private Stream<NullCheck> selectAll(Path path) {
+	protected Stream<NullCheck> collectNullChecks(Path path) {
 		try {
-			return this.selector.selectAll(path);
+			return this.checkStreamer.stream(path);
 		} catch (Throwable throwable) {
 			throwable.printStackTrace();
 		}
 		return Stream.of();
 	}
 
-	private Stream<NullCheckClassification> classifyAll(NullCheck check) {
+	protected Stream<NullCheckClassification> collectNullCheckClassifications(NullCheck check) {
 		try {
-			return this.classifier.classifyAll(check);
+			return this.classificationStreamer.stream(check);
 		} catch (Throwable throwable) {
 			throwable.printStackTrace();
 		}
 		return Stream.of();
 	}
 
-	private String stringify(NullCheckClassification classification) {
-		return this.stringifier.stringify(classification);
+	protected Stream<String> collectStrings(NullCheckClassification classification) {
+		return this.stringStreamer.stream(classification);
 	}
 
 }

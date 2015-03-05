@@ -1,24 +1,25 @@
 package ch.unibe.scg.nullfinder;
 
-import ch.unibe.scg.nullfinder.classifier.INullCheckClassifier;
+import java.util.Set;
+
+import ch.unibe.scg.nullfinder.feature.IFeature;
 
 public class NullCheckClassification {
 
-	private NullCheck check;
-	private INullCheckClassifier classifier;
+	protected NullCheck check;
+	protected Set<IFeature> features;
 
-	public NullCheckClassification(NullCheck check,
-			INullCheckClassifier classifier) {
+	public NullCheckClassification(NullCheck check, Set<IFeature> features) {
 		this.check = check;
-		this.classifier = classifier;
+		this.features = features;
 	}
 
 	public NullCheck getNullCheck() {
 		return this.check;
 	}
 
-	public INullCheckClassifier getClassifier() {
-		return this.classifier;
+	public Set<IFeature> getFeatures() {
+		return this.features;
 	}
 
 }

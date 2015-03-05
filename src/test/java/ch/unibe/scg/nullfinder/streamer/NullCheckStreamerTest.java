@@ -1,4 +1,4 @@
-package ch.unibe.scg.nullfinder;
+package ch.unibe.scg.nullfinder.streamer;
 
 import java.net.URL;
 import java.nio.file.Paths;
@@ -8,16 +8,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class NullCheckSelectorTest {
+import ch.unibe.scg.nullfinder.NullCheck;
 
-	private NullCheckSelector selector;
+public class NullCheckStreamerTest {
+
+	private NullCheckStreamer checkStreamer;
 	private Stream<NullCheck> checks;
 
 	@Before
 	public void setUp() throws Exception {
-		this.selector = new NullCheckSelector();
-		URL url = this.getClass().getResource("TestNullClass.java");
-		this.checks = this.selector.selectAll(Paths.get(url.toURI()));
+		this.checkStreamer = new NullCheckStreamer();
+		URL url = this.getClass().getResource("../TestNullClass.java");
+		this.checks = this.checkStreamer.stream(Paths.get(url.toURI()));
 	}
 
 	@Test
