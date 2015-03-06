@@ -2,12 +2,28 @@ package ch.unibe.scg.nullfinder;
 
 import java.nio.file.Path;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
+
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 
+@Entity
 public class NullCheck {
 
-	private Path path;
-	private NullLiteralExpr node;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	protected Long id;
+	@Type(type = "ch.unibe.scg.nullfinder.jpa.type.PathType")
+	@Column
+	protected Path path;
+	@Transient
+	protected NullLiteralExpr node;
 
 	public NullCheck(Path path, NullLiteralExpr node) {
 		this.path = path;

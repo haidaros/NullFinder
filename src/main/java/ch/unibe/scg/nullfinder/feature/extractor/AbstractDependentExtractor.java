@@ -14,21 +14,16 @@ public abstract class AbstractDependentExtractor extends AbstractExtractor {
 	@Override
 	public IFeature extract(NullCheck check, Set<IFeature> features)
 			throws UnextractableException {
-		Set<IFeature> dependingFeatures = this
-				.extractDependingFeatures(features);
-		if (!this.meetsDependencies(check, dependingFeatures)) {
+		if (!this.meetsDependencies(check, features)) {
 			throw new UnextractableException(check);
 		}
-		return this.safeExtract(check, dependingFeatures);
+		return this.safeExtract(check, features);
 	}
 
-	abstract protected Set<IFeature> extractDependingFeatures(
+	abstract protected boolean meetsDependencies(NullCheck check,
 			Set<IFeature> features);
 
-	abstract protected boolean meetsDependencies(NullCheck check,
-			Set<IFeature> dependingFeatures);
-
 	abstract protected IFeature safeExtract(NullCheck check,
-			Set<IFeature> dependingFeatures) throws UnextractableException;
+			Set<IFeature> features) throws UnextractableException;
 
 }

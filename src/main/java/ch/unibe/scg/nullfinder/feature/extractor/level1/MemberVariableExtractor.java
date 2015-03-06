@@ -21,10 +21,10 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 public class MemberVariableExtractor extends AbstractDeclarationExtractor {
 
 	@Override
-	protected IFeature safeExtract(NullCheck check,
-			Set<IFeature> dependingFeatures) throws UnextractableException {
+	protected IFeature safeExtract(NullCheck check, Set<IFeature> features)
+			throws UnextractableException {
 		// TODO there is some dirty stuff going on here...
-		IFeature feature = dependingFeatures.iterator().next();
+		IFeature feature = this.extractNameExtractorFeature(check, features);
 		IReason reason = feature.getReasons().iterator().next();
 		NameExpr suspect = (NameExpr) ((NodeReason) reason).getNode();
 		Node current = check.getNode().getParentNode();

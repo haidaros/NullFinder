@@ -6,13 +6,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import ch.unibe.scg.nullfinder.collector.FeatureCollector;
 import ch.unibe.scg.nullfinder.collector.NullCheckClassificationCollector;
 import ch.unibe.scg.nullfinder.collector.NullCheckCollector;
 import ch.unibe.scg.nullfinder.collector.StringCollector;
+import ch.unibe.scg.nullfinder.jpa.repository.INullCheckRepository;
 
 public class NullCheckExtractor {
 
+	@Autowired
+	protected INullCheckRepository nullCheckRepository;
 	protected NullCheckCollector checkCollector;
 	protected NullCheckClassificationCollector classificationCollector;
 	protected StringCollector stringCollector;
@@ -29,7 +34,7 @@ public class NullCheckExtractor {
 	public Stream<String> extract(Path root) throws IOException,
 			NoSuchMethodException, SecurityException {
 		return Files.walk(root).filter(this::isJavaSource)
-				.flatMap(this::collectNullChecks)
+				.flatMap(this::collectNullChecks).peek(this::createNullCheck)
 				.flatMap(this::collectNullCheckClassifications)
 				.map(this::collectString);
 	}
@@ -59,6 +64,10 @@ public class NullCheckExtractor {
 
 	protected String collectString(NullCheckClassification classification) {
 		return this.stringCollector.collect(classification);
+	}
+
+	protected void createNullCheck(NullCheck check) {
+		this.nullCheckRepository.save(check);
 	}
 
 }

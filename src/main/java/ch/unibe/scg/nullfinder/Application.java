@@ -15,11 +15,19 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-public class Main {
+@SpringBootApplication
+public class Application implements CommandLineRunner {
 
-	public static void main(String[] arguments) throws ParseException,
-			IOException {
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class);
+	}
+
+	@Override
+	public void run(String... arguments) throws ParseException, IOException {
 		Options options = new Options();
 		options.addOption(new Option("o", "output", true,
 				"CSV file to ouput to, defaults to stdout"));
@@ -42,8 +50,8 @@ public class Main {
 		BufferedWriter writer = output;
 		long before = System.currentTimeMillis();
 		System.out.println("PENDING processing...");
-		Stream.of(inputs).map(Paths::get).flatMap(Main::extractAll)
-				.forEach(line -> Main.write(writer, line));
+		Stream.of(inputs).map(Paths::get).flatMap(Application::extractAll)
+				.forEach(line -> Application.write(writer, line));
 		writer.flush();
 		if (hasOutput) {
 			writer.close();
