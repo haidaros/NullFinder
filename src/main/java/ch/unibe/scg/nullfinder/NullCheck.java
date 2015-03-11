@@ -25,6 +25,13 @@ public class NullCheck {
 	@Transient
 	protected NullLiteralExpr node;
 
+	/**
+	 * Used by Spring Data.
+	 */
+	@SuppressWarnings("unused")
+	private NullCheck() {
+	}
+
 	public NullCheck(Path path, NullLiteralExpr node) {
 		this.path = path;
 		this.node = node;

@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import ch.unibe.scg.nullfinder.collector.FeatureCollector;
 import ch.unibe.scg.nullfinder.collector.NullCheckClassificationCollector;
@@ -14,6 +15,7 @@ import ch.unibe.scg.nullfinder.collector.NullCheckCollector;
 import ch.unibe.scg.nullfinder.collector.StringCollector;
 import ch.unibe.scg.nullfinder.jpa.repository.INullCheckRepository;
 
+@Component
 public class NullCheckExtractor {
 
 	@Autowired

@@ -15,16 +15,24 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
+@ImportResource("classpath:META-INF/application-context.xml")
+@PropertySource("classpath:application.properties")
 public class Application implements CommandLineRunner {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class);
+	public static void main(String[] arguments) {
+		SpringApplication.run(Application.class, arguments);
 	}
+
+	@Autowired
+	protected NullCheckExtractor extractor;
 
 	@Override
 	public void run(String... arguments) throws ParseException, IOException {
@@ -50,8 +58,8 @@ public class Application implements CommandLineRunner {
 		BufferedWriter writer = output;
 		long before = System.currentTimeMillis();
 		System.out.println("PENDING processing...");
-		Stream.of(inputs).map(Paths::get).flatMap(Application::extractAll)
-				.forEach(line -> Application.write(writer, line));
+		Stream.of(inputs).map(Paths::get).flatMap(this::extractAll)
+				.forEach(line -> this.write(writer, line));
 		writer.flush();
 		if (hasOutput) {
 			writer.close();
@@ -61,7 +69,7 @@ public class Application implements CommandLineRunner {
 				(after - before) / 1000));
 	}
 
-	private static void write(BufferedWriter writer, String line) {
+	protected void write(BufferedWriter writer, String line) {
 		try {
 			writer.write(line);
 			writer.newLine();
@@ -70,10 +78,9 @@ public class Application implements CommandLineRunner {
 		}
 	}
 
-	private static Stream<String> extractAll(Path path) {
+	protected Stream<String> extractAll(Path path) {
 		try {
-			NullCheckExtractor extractor = new NullCheckExtractor();
-			return extractor.extract(path);
+			return this.extractor.extract(path);
 		} catch (Throwable throwable) {
 			throwable.printStackTrace();
 		}
