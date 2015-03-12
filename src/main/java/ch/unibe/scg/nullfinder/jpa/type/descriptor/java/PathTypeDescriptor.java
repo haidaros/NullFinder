@@ -36,7 +36,9 @@ public class PathTypeDescriptor extends AbstractTypeDescriptor<Path> {
 		if (Path.class.isAssignableFrom(type)) {
 			return (X) value;
 		}
-
+		if (String.class.isAssignableFrom(type)) {
+			return (X) this.toString(value);
+		}
 		throw unknownUnwrap(type);
 	}
 
@@ -47,6 +49,9 @@ public class PathTypeDescriptor extends AbstractTypeDescriptor<Path> {
 		}
 		if (Path.class.isInstance(value)) {
 			return (Path) value;
+		}
+		if (String.class.isInstance(value)) {
+			return this.fromString((String) value);
 		}
 		throw unknownWrap(value.getClass());
 	}
