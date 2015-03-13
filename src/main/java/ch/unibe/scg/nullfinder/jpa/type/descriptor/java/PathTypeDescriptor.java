@@ -24,7 +24,7 @@ public class PathTypeDescriptor extends AbstractTypeDescriptor<Path> {
 
 	@Override
 	public Path fromString(String string) {
-		return PathType.INSTANCE.fromString(string);
+		return PathType.INSTANCE.fromStringValue(string);
 	}
 
 	@SuppressWarnings("unchecked")

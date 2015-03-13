@@ -3,7 +3,7 @@ package ch.unibe.scg.nullfinder.feature.extractor.level0;
 import java.util.Set;
 
 import ch.unibe.scg.nullfinder.NullCheck;
-import ch.unibe.scg.nullfinder.feature.IFeature;
+import ch.unibe.scg.nullfinder.feature.Feature;
 import ch.unibe.scg.nullfinder.feature.extractor.AbstractExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 import ch.unibe.scg.nullfinder.feature.reason.NodeReason;
@@ -17,16 +17,21 @@ public abstract class AbstractLevel0Extractor extends AbstractExtractor {
 	}
 
 	@Override
-	public IFeature extract(NullCheck check, Set<IFeature> features)
+	public Feature extract(NullCheck check, Set<Feature> features)
 			throws UnextractableException {
 		assert check.getNode().getParentNode() instanceof BinaryExpr;
 		BinaryExpr binary = (BinaryExpr) check.getNode().getParentNode();
 		Class<?> comparand = this.getComparand();
 		if (comparand.isInstance(binary.getLeft())) {
-			return this.buildFeature(new NodeReason(binary.getLeft()));
+			Feature feature = new Feature(check, this);
+			feature.getReasons().add(new NodeReason(feature, binary.getLeft()));
+			return feature;
 		}
 		if (comparand.isInstance(binary.getRight())) {
-			return this.buildFeature(new NodeReason(binary.getRight()));
+			Feature feature = new Feature(check, this);
+			feature.getReasons()
+					.add(new NodeReason(feature, binary.getRight()));
+			return feature;
 		}
 		throw new UnextractableException(check);
 	}

@@ -1,17 +1,28 @@
 package ch.unibe.scg.nullfinder.feature.reason;
 
-import ch.unibe.scg.nullfinder.feature.IFeature;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
-public class FeatureReason implements IReason {
+import ch.unibe.scg.nullfinder.feature.Feature;
 
-	protected IFeature feature;
+@Entity
+public class FeatureReason extends Reason {
 
-	public FeatureReason(IFeature feature) {
-		this.feature = feature;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "reasonFeatureId", nullable = false)
+	protected Feature reasonFeature;
+
+	public FeatureReason(Feature feature, Feature reasonFeature) {
+		super(feature);
+		this.reasonFeature = reasonFeature;
 	}
 
-	public IFeature getFeature() {
-		return this.feature;
+	/**
+	 * Spring Data needs this.
+	 */
+	protected FeatureReason() {
+		super();
 	}
 
 }

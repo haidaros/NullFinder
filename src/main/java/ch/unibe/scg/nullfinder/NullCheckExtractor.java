@@ -10,35 +10,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import ch.unibe.scg.nullfinder.collector.FeatureCollector;
-import ch.unibe.scg.nullfinder.collector.NullCheckClassificationCollector;
 import ch.unibe.scg.nullfinder.collector.NullCheckCollector;
-import ch.unibe.scg.nullfinder.collector.StringCollector;
+import ch.unibe.scg.nullfinder.feature.Feature;
+import ch.unibe.scg.nullfinder.feature.reason.Reason;
+import ch.unibe.scg.nullfinder.jpa.repository.IFeatureRepository;
 import ch.unibe.scg.nullfinder.jpa.repository.INullCheckRepository;
+import ch.unibe.scg.nullfinder.jpa.repository.IReasonRepository;
 
 @Component
 public class NullCheckExtractor {
 
 	@Autowired
 	protected INullCheckRepository nullCheckRepository;
+	@Autowired
+	protected IFeatureRepository featureRepository;
+	@Autowired
+	protected IReasonRepository reasonRepository;
 	protected NullCheckCollector checkCollector;
-	protected NullCheckClassificationCollector classificationCollector;
-	protected StringCollector stringCollector;
+	protected FeatureCollector featureCollector;
 
 	public NullCheckExtractor() throws NoSuchMethodException,
 			SecurityException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
 		this.checkCollector = new NullCheckCollector();
-		this.classificationCollector = new NullCheckClassificationCollector(
-				new FeatureCollector());
-		this.stringCollector = new StringCollector();
+		this.featureCollector = new FeatureCollector();
 	}
 
-	public Stream<String> extract(Path root) throws IOException,
+	public Stream<Feature> extract(Path root) throws IOException,
 			NoSuchMethodException, SecurityException {
 		return Files.walk(root).filter(this::isJavaSource)
-				.flatMap(this::collectNullChecks).peek(this::createNullCheck)
-				.flatMap(this::collectNullCheckClassifications)
-				.map(this::collectString);
+				.flatMap(this::collectNullChecks).peek(this::saveNullCheck)
+				.flatMap(this::collectFeatures).peek(this::saveFeature);
 	}
 
 	protected boolean isJavaSource(Path path) {
@@ -54,22 +56,24 @@ public class NullCheckExtractor {
 		return Stream.of();
 	}
 
-	protected Stream<NullCheckClassification> collectNullCheckClassifications(
-			NullCheck check) {
+	protected Stream<Feature> collectFeatures(NullCheck check) {
 		try {
-			return Stream.of(this.classificationCollector.collect(check));
+			return this.featureCollector.collect(check).stream();
 		} catch (Throwable throwable) {
 			throwable.printStackTrace();
 		}
 		return Stream.of();
 	}
 
-	protected String collectString(NullCheckClassification classification) {
-		return this.stringCollector.collect(classification);
+	protected void saveNullCheck(NullCheck check) {
+		this.nullCheckRepository.save(check);
 	}
 
-	protected void createNullCheck(NullCheck check) {
-		this.nullCheckRepository.save(check);
+	protected void saveFeature(Feature feature) {
+		this.featureRepository.save(feature);
+		for (Reason reason : feature.getReasons()) {
+			this.reasonRepository.save(reason);
+		}
 	}
 
 }

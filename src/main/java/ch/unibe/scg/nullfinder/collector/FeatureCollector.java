@@ -10,11 +10,11 @@ import java.util.TreeMap;
 import org.reflections.Reflections;
 
 import ch.unibe.scg.nullfinder.NullCheck;
-import ch.unibe.scg.nullfinder.feature.IFeature;
+import ch.unibe.scg.nullfinder.feature.Feature;
 import ch.unibe.scg.nullfinder.feature.extractor.IExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 
-public class FeatureCollector implements ICollector<NullCheck, Set<IFeature>> {
+public class FeatureCollector implements ICollector<NullCheck, Set<Feature>> {
 
 	protected SortedMap<Integer, Set<IExtractor>> extractors;
 
@@ -40,8 +40,8 @@ public class FeatureCollector implements ICollector<NullCheck, Set<IFeature>> {
 	}
 
 	@Override
-	public Set<IFeature> collect(NullCheck check) throws UnextractableException {
-		Set<IFeature> features = new HashSet<>();
+	public Set<Feature> collect(NullCheck check) throws UnextractableException {
+		Set<Feature> features = new HashSet<>();
 		for (Set<IExtractor> levelExtractors : this.extractors.values()) {
 			for (IExtractor extractor : levelExtractors) {
 				try {
