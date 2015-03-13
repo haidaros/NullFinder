@@ -3,6 +3,8 @@ package ch.unibe.scg.nullfinder.collector;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -14,7 +16,7 @@ import ch.unibe.scg.nullfinder.feature.Feature;
 import ch.unibe.scg.nullfinder.feature.extractor.IExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 
-public class FeatureCollector implements ICollector<NullCheck, Set<Feature>> {
+public class FeatureCollector implements ICollector<NullCheck, List<Feature>> {
 
 	protected SortedMap<Integer, Set<IExtractor>> extractors;
 
@@ -40,8 +42,8 @@ public class FeatureCollector implements ICollector<NullCheck, Set<Feature>> {
 	}
 
 	@Override
-	public Set<Feature> collect(NullCheck check) throws UnextractableException {
-		Set<Feature> features = new HashSet<>();
+	public List<Feature> collect(NullCheck check) throws UnextractableException {
+		List<Feature> features = new LinkedList<>();
 		for (Set<IExtractor> levelExtractors : this.extractors.values()) {
 			for (IExtractor extractor : levelExtractors) {
 				try {

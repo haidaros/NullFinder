@@ -2,8 +2,8 @@ package ch.unibe.scg.nullfinder.collector;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 import ch.unibe.scg.nullfinder.NullCheck;
 
@@ -14,18 +14,18 @@ import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
-public class NullCheckCollector implements ICollector<Path, Set<NullCheck>> {
+public class NullCheckCollector implements ICollector<Path, List<NullCheck>> {
 
 	public static class NullCheckVisitor extends VoidVisitorAdapter<Path> {
 
-		protected Set<NullCheck> checks;
+		protected List<NullCheck> checks;
 
 		public NullCheckVisitor() {
 			super();
-			this.checks = new HashSet<>();
+			this.checks = new LinkedList<>();
 		}
 
-		public Set<NullCheck> getNullChecks() {
+		public List<NullCheck> getNullChecks() {
 			return this.checks;
 		}
 
@@ -39,7 +39,8 @@ public class NullCheckCollector implements ICollector<Path, Set<NullCheck>> {
 	}
 
 	@Override
-	public Set<NullCheck> collect(Path path) throws ParseException, IOException {
+	public List<NullCheck> collect(Path path) throws ParseException,
+			IOException {
 		CompilationUnit compilationUnit = JavaParser.parse(path.toFile());
 		NullCheckVisitor visitor = new NullCheckVisitor();
 		visitor.visit(compilationUnit, path);

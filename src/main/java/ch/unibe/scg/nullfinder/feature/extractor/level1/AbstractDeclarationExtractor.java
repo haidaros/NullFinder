@@ -1,6 +1,6 @@
 package ch.unibe.scg.nullfinder.feature.extractor.level1;
 
-import java.util.Set;
+import java.util.List;
 
 import ch.unibe.scg.nullfinder.NullCheck;
 import ch.unibe.scg.nullfinder.feature.Feature;
@@ -10,7 +10,7 @@ public abstract class AbstractDeclarationExtractor extends
 		AbstractLevel1Extractor {
 
 	protected Feature extractNameExtractorFeature(NullCheck check,
-			Set<Feature> features) {
+			List<Feature> features) {
 		assert this.meetsDependencies(check, features);
 		return features
 				.stream()
@@ -19,7 +19,7 @@ public abstract class AbstractDeclarationExtractor extends
 	}
 
 	@Override
-	protected boolean meetsDependencies(NullCheck check, Set<Feature> features) {
+	protected boolean meetsDependencies(NullCheck check, List<Feature> features) {
 		return features
 				.stream()
 				.filter(feature -> feature.getExtractor() instanceof NameExtractor)

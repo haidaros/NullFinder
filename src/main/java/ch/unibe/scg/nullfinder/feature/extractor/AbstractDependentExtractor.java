@@ -1,6 +1,6 @@
 package ch.unibe.scg.nullfinder.feature.extractor;
 
-import java.util.Set;
+import java.util.List;
 
 import ch.unibe.scg.nullfinder.NullCheck;
 import ch.unibe.scg.nullfinder.feature.Feature;
@@ -12,7 +12,7 @@ public abstract class AbstractDependentExtractor extends AbstractExtractor {
 	}
 
 	@Override
-	public Feature extract(NullCheck check, Set<Feature> features)
+	public Feature extract(NullCheck check, List<Feature> features)
 			throws UnextractableException {
 		if (!this.meetsDependencies(check, features)) {
 			throw new UnextractableException(check);
@@ -21,9 +21,9 @@ public abstract class AbstractDependentExtractor extends AbstractExtractor {
 	}
 
 	abstract protected boolean meetsDependencies(NullCheck check,
-			Set<Feature> features);
+			List<Feature> features);
 
 	abstract protected Feature safeExtract(NullCheck check,
-			Set<Feature> features) throws UnextractableException;
+			List<Feature> features) throws UnextractableException;
 
 }

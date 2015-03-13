@@ -2,7 +2,6 @@ package ch.unibe.scg.nullfinder.feature.extractor.level1;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import ch.unibe.scg.nullfinder.NullCheck;
 import ch.unibe.scg.nullfinder.feature.Feature;
@@ -23,7 +22,7 @@ import com.github.javaparser.ast.stmt.ForStmt;
 public class LocalVariableExtractor extends AbstractDeclarationExtractor {
 
 	@Override
-	protected Feature safeExtract(NullCheck check, Set<Feature> features)
+	protected Feature safeExtract(NullCheck check, List<Feature> features)
 			throws UnextractableException {
 		// TODO there is some dirty stuff going on here...
 		Feature nameExtractorFeature = this.extractNameExtractorFeature(check,

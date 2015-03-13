@@ -2,7 +2,7 @@ package ch.unibe.scg.nullfinder.collector;
 
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.Set;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,7 +13,7 @@ import ch.unibe.scg.nullfinder.NullCheck;
 public class NullCheckCollectorTest {
 
 	private NullCheckCollector checkCollector;
-	private Set<NullCheck> checks;
+	private List<NullCheck> checks;
 
 	@Before
 	public void setUp() throws Exception {

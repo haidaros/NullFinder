@@ -2,8 +2,8 @@ package ch.unibe.scg.nullfinder.collector;
 
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,7 +24,7 @@ public class FeatureCollectorTest {
 
 	private NullCheckCollector checkCollector;
 	private FeatureCollector featureCollector;
-	private Set<NullCheck> checks;
+	private List<NullCheck> checks;
 
 	@Before
 	public void setUp() throws Exception {
@@ -42,7 +42,7 @@ public class FeatureCollectorTest {
 						.equals("this.field == null")).findFirst();
 		Assert.assertTrue(match.isPresent());
 		NullCheck check = match.get();
-		Set<Feature> features = this.featureCollector.collect(check);
+		List<Feature> features = this.featureCollector.collect(check);
 		Assert.assertEquals(features.size(), 1);
 		Assert.assertTrue(features.iterator().next().getExtractor() instanceof FieldAccessExtractor);
 	}
@@ -55,7 +55,7 @@ public class FeatureCollectorTest {
 						.equals("array[0] == null")).findFirst();
 		Assert.assertTrue(match.isPresent());
 		NullCheck check = match.get();
-		Set<Feature> features = this.featureCollector.collect(check);
+		List<Feature> features = this.featureCollector.collect(check);
 		Assert.assertEquals(features.size(), 1);
 		Assert.assertTrue(features.iterator().next().getExtractor() instanceof ArrayAccessExtractor);
 	}
@@ -68,7 +68,7 @@ public class FeatureCollectorTest {
 						.equals("(value = this) != null")).findFirst();
 		Assert.assertTrue(match.isPresent());
 		NullCheck check = match.get();
-		Set<Feature> features = this.featureCollector.collect(check);
+		List<Feature> features = this.featureCollector.collect(check);
 		Assert.assertEquals(features.size(), 1);
 		Assert.assertTrue(features.iterator().next().getExtractor() instanceof EnclosedExtractor);
 	}
@@ -81,7 +81,7 @@ public class FeatureCollectorTest {
 						.equals("(String) value != null")).findFirst();
 		Assert.assertTrue(match.isPresent());
 		NullCheck check = match.get();
-		Set<Feature> features = this.featureCollector.collect(check);
+		List<Feature> features = this.featureCollector.collect(check);
 		Assert.assertEquals(features.size(), 1);
 		Assert.assertTrue(features.iterator().next().getExtractor() instanceof CastExtractor);
 	}
@@ -94,7 +94,7 @@ public class FeatureCollectorTest {
 						.equals("name == null")).findFirst();
 		Assert.assertTrue(match.isPresent());
 		NullCheck check = match.get();
-		Set<Feature> features = this.featureCollector.collect(check);
+		List<Feature> features = this.featureCollector.collect(check);
 		Assert.assertEquals(features.size(), 2);
 		Assert.assertTrue(features.stream().anyMatch(
 				feature -> feature.getExtractor() instanceof NameExtractor));
@@ -112,7 +112,7 @@ public class FeatureCollectorTest {
 						.equals("this.getNull() == null")).findFirst();
 		Assert.assertTrue(match.isPresent());
 		NullCheck check = match.get();
-		Set<Feature> features = this.featureCollector.collect(check);
+		List<Feature> features = this.featureCollector.collect(check);
 		Assert.assertEquals(features.size(), 1);
 		Assert.assertTrue(features.iterator().next().getExtractor() instanceof MethodCallExtractor);
 	}
