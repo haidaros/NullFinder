@@ -98,12 +98,18 @@ public class NodeType implements CompositeUserType {
 		if (x == null || y == null) {
 			return false;
 		}
-		return x.equals(y);
+		if (!x.getClass().equals(y.getClass())) {
+			return false;
+		}
+		return this.hashCode(x) == this.hashCode(y);
 	}
 
 	@Override
 	public int hashCode(Object x) throws HibernateException {
-		return x.hashCode();
+		Node node = (Node) x;
+		return String.join(" ", "" + node.getBeginLine(),
+				"" + node.getBeginColumn(), "" + node.getEndLine(),
+				"" + node.getEndColumn()).hashCode();
 	}
 
 	@Override

@@ -79,12 +79,16 @@ public class ExtractorType implements CompositeUserType {
 		if (x == null || y == null) {
 			return false;
 		}
-		return x.equals(y);
+		if (!x.getClass().equals(y.getClass())) {
+			return false;
+		}
+		return this.hashCode(x) == this.hashCode(y);
 	}
 
 	@Override
 	public int hashCode(Object x) throws HibernateException {
-		return x.hashCode();
+		IExtractor extractor = (IExtractor) x;
+		return String.join(" ", "" + extractor.getLevel()).hashCode();
 	}
 
 	@Override
