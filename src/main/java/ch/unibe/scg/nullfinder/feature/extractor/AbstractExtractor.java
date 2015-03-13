@@ -1,6 +1,5 @@
 package ch.unibe.scg.nullfinder.feature.extractor;
 
-
 public abstract class AbstractExtractor implements IExtractor {
 
 	protected int level;
@@ -12,6 +11,11 @@ public abstract class AbstractExtractor implements IExtractor {
 	@Override
 	public int getLevel() {
 		return this.level;
+	}
+
+	@Override
+	public void setLevel(int level) {
+		this.level = level;
 	}
 
 }
