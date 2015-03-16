@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.unibe.scg.nullfinder.NullCheck;
+import ch.unibe.scg.nullfinder.ast.CompilationUnit;
+import ch.unibe.scg.nullfinder.ast.Node;
 import ch.unibe.scg.nullfinder.feature.Feature;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 import ch.unibe.scg.nullfinder.feature.reason.FeatureReason;
 import ch.unibe.scg.nullfinder.feature.reason.NodeReason;
 import ch.unibe.scg.nullfinder.feature.reason.Reason;
 
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
@@ -22,18 +23,23 @@ import com.github.javaparser.ast.stmt.ForStmt;
 public class LocalVariableExtractor extends AbstractDeclarationExtractor {
 
 	@Override
-	protected Feature safeExtract(NullCheck check, List<Feature> features)
+	protected Feature safeExtract(NullCheck nullCheck, List<Feature> features)
 			throws UnextractableException {
 		// TODO there is some dirty stuff going on here...
-		Feature nameExtractorFeature = this.extractNameExtractorFeature(check,
+		CompilationUnit compilationUnit = nullCheck.getNode().getCompilationUnit();
+		Feature nameExtractorFeature = this.extractNameExtractorFeature(nullCheck,
 				features);
 		Reason reason = nameExtractorFeature.getReasons().iterator().next();
-		NameExpr suspect = (NameExpr) ((NodeReason) reason).getNode();
-		Node current = check.getNode().getParentNode();
-		Node stop = check.getNode();
-		// haha, a null check!
+		NameExpr suspect = (NameExpr) ((NodeReason) reason).getNode()
+				.getJavaParserNode();
+		com.github.javaparser.ast.Node current = nullCheck.getNode()
+				.getJavaParserNode().getParentNode();
+		com.github.javaparser.ast.Node stop = nullCheck.getNode()
+				.getJavaParserNode();
+		// haha, a null nullCheck!
 		while (current != null) {
-			List<Node> children = current.getChildrenNodes();
+			List<com.github.javaparser.ast.Node> children = current
+					.getChildrenNodes();
 			if (current instanceof ForStmt) {
 				// reorder children
 				ForStmt forStatement = (ForStmt) current;
@@ -49,7 +55,7 @@ public class LocalVariableExtractor extends AbstractDeclarationExtractor {
 				}
 				children.add(forStatement.getBody());
 			}
-			for (Node child : children) {
+			for (com.github.javaparser.ast.Node child : children) {
 				if (child == stop) {
 					break;
 				}
@@ -59,12 +65,13 @@ public class LocalVariableExtractor extends AbstractDeclarationExtractor {
 								.findDeclaration(
 										(VariableDeclarationExpr) child,
 										suspect);
-						Feature feature = new Feature(check, this);
+						Feature feature = new Feature(nullCheck, this);
 						feature.getReasons()
 								.add(new FeatureReason(feature,
 										nameExtractorFeature));
 						feature.getReasons().add(
-								new NodeReason(feature, variableDeclarator));
+								new NodeReason(feature, new Node(
+										compilationUnit, variableDeclarator)));
 						return feature;
 					} catch (DeclarationNotFoundException exception) {
 						// noop
@@ -78,13 +85,14 @@ public class LocalVariableExtractor extends AbstractDeclarationExtractor {
 									.findDeclaration(
 											(VariableDeclarationExpr) expression,
 											suspect);
-							Feature feature = new Feature(check, this);
+							Feature feature = new Feature(nullCheck, this);
 							feature.getReasons().add(
 									new FeatureReason(feature,
 											nameExtractorFeature));
-							feature.getReasons()
-									.add(new NodeReason(feature,
-											variableDeclarator));
+							feature.getReasons().add(
+									new NodeReason(feature,
+											new Node(compilationUnit,
+													variableDeclarator)));
 							return feature;
 						} catch (DeclarationNotFoundException exception) {
 							// noop
@@ -94,12 +102,13 @@ public class LocalVariableExtractor extends AbstractDeclarationExtractor {
 						if (assignment.getTarget() instanceof NameExpr) {
 							NameExpr name = (NameExpr) assignment.getTarget();
 							if (suspect.getName().equals(name.getName())) {
-								Feature feature = new Feature(check, this);
+								Feature feature = new Feature(nullCheck, this);
 								feature.getReasons().add(
 										new FeatureReason(feature,
 												nameExtractorFeature));
 								feature.getReasons().add(
-										new NodeReason(feature, name));
+										new NodeReason(feature, new Node(
+												compilationUnit, name)));
 								return feature;
 							}
 						}
@@ -110,7 +119,7 @@ public class LocalVariableExtractor extends AbstractDeclarationExtractor {
 			stop = current;
 			current = current.getParentNode();
 		}
-		throw new UnextractableException(check);
+		throw new UnextractableException(nullCheck);
 	}
 
 	protected VariableDeclarator findDeclaration(

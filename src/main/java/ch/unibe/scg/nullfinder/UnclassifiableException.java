@@ -5,16 +5,16 @@ public class UnclassifiableException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	protected NullCheck check;
+	protected NullCheck nullCheck;
 
-	public UnclassifiableException(NullCheck check, Exception cause) {
+	public UnclassifiableException(NullCheck nullCheck, Exception cause) {
 		super(cause);
-		this.check = check;
+		this.nullCheck = nullCheck;
 	}
 
 	@Override
 	public String toString() {
-		return String.format("%s: %s", super.toString(), this.check.toString());
+		return String.format("%s: %s", super.toString(), this.nullCheck.toString());
 	}
 
 }

@@ -9,9 +9,9 @@ import ch.unibe.scg.nullfinder.feature.extractor.level0.NameExtractor;
 public abstract class AbstractDeclarationExtractor extends
 		AbstractLevel1Extractor {
 
-	protected Feature extractNameExtractorFeature(NullCheck check,
+	protected Feature extractNameExtractorFeature(NullCheck nullCheck,
 			List<Feature> features) {
-		assert this.meetsDependencies(check, features);
+		assert this.meetsDependencies(nullCheck, features);
 		return features
 				.stream()
 				.filter(feature -> feature.getExtractor() instanceof NameExtractor)
@@ -19,7 +19,7 @@ public abstract class AbstractDeclarationExtractor extends
 	}
 
 	@Override
-	protected boolean meetsDependencies(NullCheck check, List<Feature> features) {
+	protected boolean meetsDependencies(NullCheck nullCheck, List<Feature> features) {
 		return features
 				.stream()
 				.filter(feature -> feature.getExtractor() instanceof NameExtractor)

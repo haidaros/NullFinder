@@ -1,7 +1,7 @@
 package ch.unibe.scg.nullfinder.feature;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,7 +23,7 @@ import ch.unibe.scg.nullfinder.feature.extractor.IExtractor;
 import ch.unibe.scg.nullfinder.feature.reason.Reason;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "checkId",
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "nullCheckId",
 		"className", "level" }))
 public class Feature {
 
@@ -31,38 +31,38 @@ public class Feature {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	protected Long id;
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "checkId", nullable = false)
-	protected NullCheck check;
+	@JoinColumn(name = "nullCheckId", nullable = false)
+	protected NullCheck nullCheck;
 	@Columns(columns = { @Column(name = "className", nullable = false),
 			@Column(name = "level", nullable = false) })
 	@Type(type = "ch.unibe.scg.nullfinder.jpa.type.ExtractorType")
 	protected IExtractor extractor;
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "feature")
-	protected Set<Reason> reasons;
+	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "feature")
+	protected List<Reason> reasons;
 
-	public Feature(NullCheck check, IExtractor extractor) {
-		this.check = check;
+	public Feature(NullCheck nullCheck, IExtractor extractor) {
+		this.nullCheck = nullCheck;
 		this.extractor = extractor;
-		this.reasons = new HashSet<>();
+		this.reasons = new LinkedList<>();
+	}
+
+	/**
+	 * Required by Spring Data.
+	 */
+	protected Feature() {
+
 	}
 
 	public NullCheck getNullCheck() {
-		return this.check;
+		return this.nullCheck;
 	}
 
 	public IExtractor getExtractor() {
 		return this.extractor;
 	}
 
-	public Set<Reason> getReasons() {
+	public List<Reason> getReasons() {
 		return this.reasons;
-	}
-
-	/**
-	 * Spring Data needs this.
-	 */
-	protected Feature() {
-
 	}
 
 }

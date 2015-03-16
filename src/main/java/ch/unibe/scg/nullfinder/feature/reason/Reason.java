@@ -27,7 +27,7 @@ public class Reason {
 	}
 
 	/**
-	 * Spring Data needs this.
+	 * Required by Spring Data.
 	 */
 	protected Reason() {
 

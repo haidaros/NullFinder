@@ -3,6 +3,8 @@ package ch.unibe.scg.nullfinder.feature.extractor.level0;
 import java.util.List;
 
 import ch.unibe.scg.nullfinder.NullCheck;
+import ch.unibe.scg.nullfinder.ast.CompilationUnit;
+import ch.unibe.scg.nullfinder.ast.Node;
 import ch.unibe.scg.nullfinder.feature.Feature;
 import ch.unibe.scg.nullfinder.feature.extractor.AbstractExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
@@ -17,23 +19,28 @@ public abstract class AbstractLevel0Extractor extends AbstractExtractor {
 	}
 
 	@Override
-	public Feature extract(NullCheck check, List<Feature> features)
+	public Feature extract(NullCheck nullCheck, List<Feature> features)
 			throws UnextractableException {
-		assert check.getNode().getParentNode() instanceof BinaryExpr;
-		BinaryExpr binary = (BinaryExpr) check.getNode().getParentNode();
+		assert nullCheck.getNode().getJavaParserNode().getParentNode() instanceof BinaryExpr;
+		BinaryExpr binary = (BinaryExpr) nullCheck.getNode().getJavaParserNode()
+				.getParentNode();
+		CompilationUnit compilationUnit = nullCheck.getNode().getCompilationUnit();
 		Class<?> comparand = this.getComparand();
 		if (comparand.isInstance(binary.getLeft())) {
-			Feature feature = new Feature(check, this);
-			feature.getReasons().add(new NodeReason(feature, binary.getLeft()));
+			Feature feature = new Feature(nullCheck, this);
+			feature.getReasons().add(
+					new NodeReason(feature, new Node(compilationUnit, binary
+							.getLeft())));
 			return feature;
 		}
 		if (comparand.isInstance(binary.getRight())) {
-			Feature feature = new Feature(check, this);
-			feature.getReasons()
-					.add(new NodeReason(feature, binary.getRight()));
+			Feature feature = new Feature(nullCheck, this);
+			feature.getReasons().add(
+					new NodeReason(feature, new Node(compilationUnit, binary
+							.getRight())));
 			return feature;
 		}
-		throw new UnextractableException(check);
+		throw new UnextractableException(nullCheck);
 	}
 
 	abstract protected Class<?> getComparand();

@@ -1,24 +1,17 @@
 package ch.unibe.scg.nullfinder.feature.reason;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
-import org.hibernate.annotations.Columns;
-import org.hibernate.annotations.Type;
-
+import ch.unibe.scg.nullfinder.ast.Node;
 import ch.unibe.scg.nullfinder.feature.Feature;
-
-import com.github.javaparser.ast.Node;
 
 @Entity
 public class NodeReason extends Reason {
 
-	@Columns(columns = { @Column(name = "className", nullable = false),
-			@Column(name = "beginLine", nullable = false),
-			@Column(name = "beginColumn", nullable = false),
-			@Column(name = "endLine", nullable = false),
-			@Column(name = "endColumn", nullable = false) })
-	@Type(type = "ch.unibe.scg.nullfinder.jpa.type.NodeType")
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "nodeId", nullable = false)
 	protected Node node;
 
 	public NodeReason(Feature feature, Node node) {
@@ -26,15 +19,19 @@ public class NodeReason extends Reason {
 		this.node = node;
 	}
 
+	/**
+	 * Required by Spring Data.
+	 */
+	protected NodeReason() {
+		super();
+	}
+
 	public Node getNode() {
 		return this.node;
 	}
 
-	/**
-	 * Spring Data needs this.
-	 */
-	protected NodeReason() {
-		super();
+	public void setNode(Node node) {
+		this.node = node;
 	}
 
 }

@@ -42,19 +42,19 @@ public class FeatureCollector implements ICollector<NullCheck, List<Feature>> {
 	}
 
 	@Override
-	public List<Feature> collect(NullCheck check) throws UnextractableException {
+	public List<Feature> collect(NullCheck nullCheck) throws UnextractableException {
 		List<Feature> features = new LinkedList<>();
 		for (Set<IExtractor> levelExtractors : this.extractors.values()) {
 			for (IExtractor extractor : levelExtractors) {
 				try {
-					features.add(extractor.extract(check, features));
+					features.add(extractor.extract(nullCheck, features));
 				} catch (UnextractableException e) {
 					// noop
 				}
 			}
 		}
 		if (features.isEmpty()) {
-			throw new UnextractableException(check);
+			throw new UnextractableException(nullCheck);
 		}
 		return features;
 	}

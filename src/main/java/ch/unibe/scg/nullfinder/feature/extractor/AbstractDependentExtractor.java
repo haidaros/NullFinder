@@ -12,18 +12,18 @@ public abstract class AbstractDependentExtractor extends AbstractExtractor {
 	}
 
 	@Override
-	public Feature extract(NullCheck check, List<Feature> features)
+	public Feature extract(NullCheck nullCheck, List<Feature> features)
 			throws UnextractableException {
-		if (!this.meetsDependencies(check, features)) {
-			throw new UnextractableException(check);
+		if (!this.meetsDependencies(nullCheck, features)) {
+			throw new UnextractableException(nullCheck);
 		}
-		return this.safeExtract(check, features);
+		return this.safeExtract(nullCheck, features);
 	}
 
-	abstract protected boolean meetsDependencies(NullCheck check,
+	abstract protected boolean meetsDependencies(NullCheck nullCheck,
 			List<Feature> features);
 
-	abstract protected Feature safeExtract(NullCheck check,
+	abstract protected Feature safeExtract(NullCheck nullCheck,
 			List<Feature> features) throws UnextractableException;
 
 }

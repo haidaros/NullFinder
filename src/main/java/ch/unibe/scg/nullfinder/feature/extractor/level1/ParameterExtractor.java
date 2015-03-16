@@ -3,13 +3,14 @@ package ch.unibe.scg.nullfinder.feature.extractor.level1;
 import java.util.List;
 
 import ch.unibe.scg.nullfinder.NullCheck;
+import ch.unibe.scg.nullfinder.ast.CompilationUnit;
+import ch.unibe.scg.nullfinder.ast.Node;
 import ch.unibe.scg.nullfinder.feature.Feature;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 import ch.unibe.scg.nullfinder.feature.reason.FeatureReason;
 import ch.unibe.scg.nullfinder.feature.reason.NodeReason;
 import ch.unibe.scg.nullfinder.feature.reason.Reason;
 
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
@@ -18,15 +19,18 @@ import com.github.javaparser.ast.expr.NameExpr;
 public class ParameterExtractor extends AbstractDeclarationExtractor {
 
 	@Override
-	protected Feature safeExtract(NullCheck check, List<Feature> features)
+	protected Feature safeExtract(NullCheck nullCheck, List<Feature> features)
 			throws UnextractableException {
 		// TODO there is some dirty stuff going on here...
-		Feature nameExtractorFeature = this.extractNameExtractorFeature(check,
+		CompilationUnit compilationUnit = nullCheck.getNode().getCompilationUnit();
+		Feature nameExtractorFeature = this.extractNameExtractorFeature(nullCheck,
 				features);
 		Reason reason = nameExtractorFeature.getReasons().iterator().next();
-		NameExpr suspect = (NameExpr) ((NodeReason) reason).getNode();
-		Node current = check.getNode().getParentNode();
-		// haha, a null check!
+		NameExpr suspect = (NameExpr) ((NodeReason) reason).getNode()
+				.getJavaParserNode();
+		com.github.javaparser.ast.Node current = nullCheck.getNode()
+				.getJavaParserNode().getParentNode();
+		// haha, a null nullCheck!
 		while (current != null) {
 			if (current instanceof MethodDeclaration) {
 				MethodDeclaration method = (MethodDeclaration) current;
@@ -35,12 +39,13 @@ public class ParameterExtractor extends AbstractDeclarationExtractor {
 					try {
 						Parameter parameter = this.findDeclaration(
 								method.getParameters(), suspect);
-						Feature feature = new Feature(check, this);
+						Feature feature = new Feature(nullCheck, this);
 						feature.getReasons()
 								.add(new FeatureReason(feature,
 										nameExtractorFeature));
 						feature.getReasons().add(
-								new NodeReason(feature, parameter));
+								new NodeReason(feature, new Node(
+										compilationUnit, parameter)));
 						return feature;
 					} catch (DeclarationNotFoundException exception) {
 						// noop
@@ -53,12 +58,13 @@ public class ParameterExtractor extends AbstractDeclarationExtractor {
 					try {
 						Parameter parameter = this.findDeclaration(
 								constructor.getParameters(), suspect);
-						Feature feature = new Feature(check, this);
+						Feature feature = new Feature(nullCheck, this);
 						feature.getReasons()
 								.add(new FeatureReason(feature,
 										nameExtractorFeature));
 						feature.getReasons().add(
-								new NodeReason(feature, parameter));
+								new NodeReason(feature, new Node(
+										compilationUnit, parameter)));
 						return feature;
 					} catch (DeclarationNotFoundException exception) {
 						// noop
@@ -67,7 +73,7 @@ public class ParameterExtractor extends AbstractDeclarationExtractor {
 			}
 			current = current.getParentNode();
 		}
-		throw new UnextractableException(check);
+		throw new UnextractableException(nullCheck);
 	}
 
 	protected Parameter findDeclaration(List<Parameter> parameters,

@@ -21,8 +21,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import ch.unibe.scg.nullfinder.feature.Feature;
 
 @SpringBootApplication
-@ImportResource("classpath:META-INF/application-context.xml")
 @EnableJpaRepositories
+@ImportResource("classpath:META-INF/application-context.xml")
 public class Application implements CommandLineRunner {
 
 	public static void main(String[] arguments) {

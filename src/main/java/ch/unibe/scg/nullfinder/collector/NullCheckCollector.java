@@ -1,50 +1,50 @@
 package ch.unibe.scg.nullfinder.collector;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
 import ch.unibe.scg.nullfinder.NullCheck;
+import ch.unibe.scg.nullfinder.ast.CompilationUnit;
+import ch.unibe.scg.nullfinder.ast.Node;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseException;
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
-public class NullCheckCollector implements ICollector<Path, List<NullCheck>> {
+public class NullCheckCollector implements
+		ICollector<CompilationUnit, List<NullCheck>> {
 
-	public static class NullCheckVisitor extends VoidVisitorAdapter<Path> {
+	public static class NullCheckNodeVisitor extends
+			VoidVisitorAdapter<CompilationUnit> {
 
-		protected List<NullCheck> checks;
+		protected List<NullCheck> nullChecks;
 
-		public NullCheckVisitor() {
+		public NullCheckNodeVisitor() {
 			super();
-			this.checks = new LinkedList<>();
+			this.nullChecks = new LinkedList<>();
 		}
 
-		public List<NullCheck> getNullChecks() {
-			return this.checks;
+		public List<NullCheck> getChecks() {
+			return this.nullChecks;
 		}
 
 		@Override
-		public void visit(NullLiteralExpr node, Path path) {
-			if (node.getParentNode() instanceof BinaryExpr) {
-				this.checks.add(new NullCheck(path, node));
+		public void visit(NullLiteralExpr javaParserNode,
+				CompilationUnit compilationUnit) {
+			if (javaParserNode.getParentNode() instanceof BinaryExpr) {
+				this.nullChecks.add(new NullCheck(new Node(compilationUnit,
+						javaParserNode)));
 			}
 		}
 
 	}
 
 	@Override
-	public List<NullCheck> collect(Path path) throws ParseException,
-			IOException {
-		CompilationUnit compilationUnit = JavaParser.parse(path.toFile());
-		NullCheckVisitor visitor = new NullCheckVisitor();
-		visitor.visit(compilationUnit, path);
-		return visitor.getNullChecks();
+	public List<NullCheck> collect(CompilationUnit compilationUnit) {
+		NullCheckNodeVisitor visitor = new NullCheckNodeVisitor();
+		visitor.visit(compilationUnit.getJavaParserCompilationUnit(),
+				compilationUnit);
+		return visitor.getChecks();
 	}
 
 }

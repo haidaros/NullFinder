@@ -19,7 +19,7 @@ public class FeatureReason extends Reason {
 	}
 
 	/**
-	 * Spring Data needs this.
+	 * Required by Spring Data.
 	 */
 	protected FeatureReason() {
 		super();

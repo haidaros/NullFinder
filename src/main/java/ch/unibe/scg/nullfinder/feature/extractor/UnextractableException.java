@@ -6,16 +6,16 @@ public class UnextractableException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	protected NullCheck check;
+	protected NullCheck nullCheck;
 
-	public UnextractableException(NullCheck check) {
+	public UnextractableException(NullCheck nullCheck) {
 		super();
-		this.check = check;
+		this.nullCheck = nullCheck;
 	}
 
 	@Override
 	public String toString() {
-		return String.format("%s: %s", super.toString(), this.check.toString());
+		return String.format("%s: %s", super.toString(), this.nullCheck.toString());
 	}
 
 }
