@@ -8,6 +8,17 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
 		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd">
 
+	<!-- Scope -->
+	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+		<property name="scopes">
+			<map>
+				<entry key="thread">
+					<bean class="org.springframework.context.support.SimpleThreadScope" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
 	<!-- Database -->
 	<context:property-placeholder location="classpath:jdbc.properties" />
 	<bean id="mySqlDataSource"
@@ -20,13 +31,13 @@
 
 	<!-- Entity Manager Factory -->
 	<bean id="entityManagerFactory"
-		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" scope="thread">
 		<property name="dataSource" ref="mySqlDataSource" />
 		<property name="persistenceUnitName" value="nullFinderPersistenceUnit"></property>
 	</bean>
 
 	<!-- Transaction Manager -->
-	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" scope="thread">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
 

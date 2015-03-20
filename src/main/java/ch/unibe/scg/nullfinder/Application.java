@@ -15,10 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import ch.unibe.scg.nullfinder.feature.Feature;
+import ch.unibe.scg.nullfinder.processor.FileTreeProcessor;
+import ch.unibe.scg.nullfinder.processor.JavaSourceProcessor;
 
 @SpringBootApplication
 @EnableJpaRepositories
@@ -30,7 +32,9 @@ public class Application implements CommandLineRunner {
 	}
 
 	@Autowired
-	protected NullCheckExtractor extractor;
+	protected FileTreeProcessor fileTreeProcessor;
+	@Autowired
+	protected ApplicationContext applicationContext;
 
 	@Override
 	public void run(String... arguments) throws ParseException, IOException {
@@ -46,19 +50,30 @@ public class Application implements CommandLineRunner {
 		}
 		long before = System.currentTimeMillis();
 		System.out.println("PENDING processing...");
-		Stream.of(inputs).map(Paths::get).flatMap(this::extractAll).count();
+		Stream.of(inputs).map(Paths::get).flatMap(this::getJavaSources)
+				.forEach(this::extractAll);
 		long after = System.currentTimeMillis();
 		System.out.println(String.format("DONE in %d seconds",
 				(after - before) / 1000));
 	}
 
-	protected Stream<Feature> extractAll(Path path) {
+	protected Stream<Path> getJavaSources(Path path) {
 		try {
-			return this.extractor.extract(path);
+			return this.fileTreeProcessor.process(path);
 		} catch (Throwable throwable) {
 			throwable.printStackTrace();
 		}
 		return Stream.of();
+	}
+
+	protected void extractAll(Path path) {
+		try {
+			JavaSourceProcessor javaSourceProcessor = this.applicationContext
+					.getBean(JavaSourceProcessor.class);
+			javaSourceProcessor.process(path);
+		} catch (Throwable throwable) {
+			throwable.printStackTrace();
+		}
 	}
 
 }

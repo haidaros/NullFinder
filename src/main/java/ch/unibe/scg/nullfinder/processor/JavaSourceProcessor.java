@@ -1,8 +1,6 @@
-package ch.unibe.scg.nullfinder;
+package ch.unibe.scg.nullfinder.processor;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
@@ -10,6 +8,7 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import ch.unibe.scg.nullfinder.NullCheck;
 import ch.unibe.scg.nullfinder.ast.CompilationUnit;
 import ch.unibe.scg.nullfinder.ast.Node;
 import ch.unibe.scg.nullfinder.collector.CompilationUnitCollector;
@@ -25,7 +24,7 @@ import ch.unibe.scg.nullfinder.jpa.repository.INullCheckRepository;
 import ch.unibe.scg.nullfinder.jpa.repository.IReasonRepository;
 
 @Component
-public class NullCheckExtractor {
+public class JavaSourceProcessor {
 
 	@Autowired
 	protected INodeRepository nodeRepository;
@@ -39,7 +38,7 @@ public class NullCheckExtractor {
 	protected NullCheckCollector checkCollector;
 	protected FeatureCollector featureCollector;
 
-	public NullCheckExtractor() throws NoSuchMethodException,
+	public JavaSourceProcessor() throws NoSuchMethodException,
 			SecurityException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
 		this.compilationUnitCollector = new CompilationUnitCollector();
@@ -47,17 +46,11 @@ public class NullCheckExtractor {
 		this.featureCollector = new FeatureCollector();
 	}
 
-	public Stream<Feature> extract(Path root) throws IOException,
-			NoSuchMethodException, SecurityException {
-		return Files.walk(root).filter(this::isJavaSource)
-				.flatMap(this::collectCompilationUnit)
+	public void process(Path javaSourcePath) {
+		Stream.of(javaSourcePath).flatMap(this::collectCompilationUnit)
 				.peek(this::saveCompilationUnit)
 				.flatMap(this::collectNullChecks).peek(this::saveNullCheck)
-				.flatMap(this::collectFeatures).peek(this::saveFeature);
-	}
-
-	protected boolean isJavaSource(Path path) {
-		return path.getFileName().toString().endsWith(".java");
+				.flatMap(this::collectFeatures).forEach(this::saveFeature);
 	}
 
 	protected Stream<CompilationUnit> collectCompilationUnit(Path path) {
