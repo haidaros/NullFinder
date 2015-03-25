@@ -31,6 +31,7 @@ public class NullCheckCollector implements
 		@Override
 		public void visit(NullLiteralExpr javaParserNode,
 				CompilationUnit compilationUnit) {
+			super.visit(javaParserNode, compilationUnit);
 			if (javaParserNode.getParentNode() instanceof BinaryExpr) {
 				this.nullChecks.add(new NullCheck(new Node(compilationUnit,
 						javaParserNode)));

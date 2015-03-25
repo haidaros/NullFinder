@@ -1,0 +1,44 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd">
+
+	<bean id="jobRepository"
+		class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+		<property name="transactionManager" ref="resourcelessTransactionManager" />
+	</bean>
+
+	<bean id="resourcelessTransactionManager"
+		class="org.springframework.batch.support.transaction.ResourcelessTransactionManager" />
+
+	<bean id="jobLauncher"
+		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<property name="jobRepository" ref="jobRepository" />
+	</bean>
+
+	<batch:job id="nullFinderJob">
+		<batch:step id="process">
+			<batch:tasklet>
+				<batch:chunk reader="javaSourceReader" writer="nullCheckWriter"
+					processor="javaSourceProcessor" commit-interval="1" skip-limit="1">
+					<batch:skippable-exception-classes>
+						<batch:include class="java.lang.Throwable" />
+					</batch:skippable-exception-classes>
+				</batch:chunk>
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<bean id="javaSourceReader" class="ch.unibe.scg.nullfinder.batch.JavaSourceReader">
+	</bean>
+	<bean id="nullCheckWriter" class="ch.unibe.scg.nullfinder.batch.NullCheckWriter">
+	</bean>
+	<bean id="javaSourceProcessor" class="ch.unibe.scg.nullfinder.batch.JavaSourceProcessor">
+	</bean>
+</beans>

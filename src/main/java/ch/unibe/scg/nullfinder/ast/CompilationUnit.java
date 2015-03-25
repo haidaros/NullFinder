@@ -2,10 +2,14 @@ package ch.unibe.scg.nullfinder.ast;
 
 import java.io.ByteArrayInputStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Type;
 
@@ -15,7 +19,9 @@ import com.github.javaparser.ParseException;
 @Entity
 public class CompilationUnit extends Node {
 
-	@Column(name = "path", nullable = false, unique = true)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "compilationUnit")
+	protected List<Node> nodes;
+	@Column(name = "path", unique = true, nullable = false)
 	@Type(type = "ch.unibe.scg.nullfinder.jpa.type.PathType")
 	protected Path path;
 	@Column(name = "source", nullable = false)
@@ -26,6 +32,7 @@ public class CompilationUnit extends Node {
 			com.github.javaparser.ast.CompilationUnit javaParserCompilationUnit,
 			Path path, String source) {
 		super(null, javaParserCompilationUnit);
+		this.nodes = new ArrayList<>();
 		this.path = path;
 		this.source = source;
 	}

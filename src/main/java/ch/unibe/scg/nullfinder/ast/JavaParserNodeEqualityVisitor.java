@@ -82,9 +82,9 @@ import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
-import com.github.javaparser.ast.visitor.VoidVisitor;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
-public class JavaParserNodeEqualityVisitor implements VoidVisitor<Node> {
+public class JavaParserNodeEqualityVisitor extends VoidVisitorAdapter<Node> {
 
 	protected com.github.javaparser.ast.Node javaParserNode;
 
@@ -98,353 +98,412 @@ public class JavaParserNodeEqualityVisitor implements VoidVisitor<Node> {
 	@Override
 	public void visit(com.github.javaparser.ast.CompilationUnit javaParserNode,
 			Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 	}
 
 	@Override
 	public void visit(PackageDeclaration javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ImportDeclaration javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(TypeParameter javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(LineComment javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(BlockComment javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ClassOrInterfaceDeclaration javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(EnumDeclaration javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(EmptyTypeDeclaration javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(EnumConstantDeclaration javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(AnnotationDeclaration javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(AnnotationMemberDeclaration javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(FieldDeclaration javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(VariableDeclarator javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(VariableDeclaratorId javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ConstructorDeclaration javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(MethodDeclaration javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(Parameter javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(MultiTypeParameter javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(EmptyMemberDeclaration javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(InitializerDeclaration javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(JavadocComment javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ClassOrInterfaceType javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(PrimitiveType javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ReferenceType javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(VoidType javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(WildcardType javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ArrayAccessExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ArrayCreationExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ArrayInitializerExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(AssignExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(BinaryExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(CastExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ClassExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ConditionalExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(EnclosedExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(FieldAccessExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(InstanceOfExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(StringLiteralExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(IntegerLiteralExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(LongLiteralExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(IntegerLiteralMinValueExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(LongLiteralMinValueExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(CharLiteralExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(DoubleLiteralExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(BooleanLiteralExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(NullLiteralExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(MethodCallExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(NameExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ObjectCreationExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(QualifiedNameExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ThisExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(SuperExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(UnaryExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(VariableDeclarationExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(MarkerAnnotationExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(SingleMemberAnnotationExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(NormalAnnotationExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(MemberValuePair javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
@@ -452,144 +511,168 @@ public class JavaParserNodeEqualityVisitor implements VoidVisitor<Node> {
 	@Override
 	public void visit(ExplicitConstructorInvocationStmt javaParserNode,
 			Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(TypeDeclarationStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(AssertStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(BlockStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(LabeledStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(EmptyStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ExpressionStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(SwitchStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(SwitchEntryStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(BreakStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ReturnStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(IfStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(WhileStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ContinueStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(DoStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ForeachStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ForStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(ThrowStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(SynchronizedStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(TryStmt javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(CatchClause javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(LambdaExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(MethodReferenceExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}
 
 	@Override
 	public void visit(TypeExpr javaParserNode, Node node) {
+		super.visit(javaParserNode, node);
 		this.setJavaParserNodeIfEqual(javaParserNode, node);
 
 	}

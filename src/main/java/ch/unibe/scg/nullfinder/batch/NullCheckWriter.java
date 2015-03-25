@@ -1,19 +1,13 @@
-package ch.unibe.scg.nullfinder.processor;
+package ch.unibe.scg.nullfinder.batch;
 
-import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Stream;
 
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import ch.unibe.scg.nullfinder.NullCheck;
 import ch.unibe.scg.nullfinder.ast.CompilationUnit;
 import ch.unibe.scg.nullfinder.ast.Node;
-import ch.unibe.scg.nullfinder.collector.CompilationUnitCollector;
-import ch.unibe.scg.nullfinder.collector.FeatureCollector;
-import ch.unibe.scg.nullfinder.collector.NullCheckCollector;
 import ch.unibe.scg.nullfinder.feature.Feature;
 import ch.unibe.scg.nullfinder.feature.reason.FeatureReason;
 import ch.unibe.scg.nullfinder.feature.reason.NodeReason;
@@ -23,8 +17,7 @@ import ch.unibe.scg.nullfinder.jpa.repository.INodeRepository;
 import ch.unibe.scg.nullfinder.jpa.repository.INullCheckRepository;
 import ch.unibe.scg.nullfinder.jpa.repository.IReasonRepository;
 
-@Component
-public class JavaSourceProcessor {
+public class NullCheckWriter implements ItemWriter<CompilationUnit> {
 
 	@Autowired
 	protected INodeRepository nodeRepository;
@@ -34,51 +27,14 @@ public class JavaSourceProcessor {
 	protected IFeatureRepository featureRepository;
 	@Autowired
 	protected IReasonRepository reasonRepository;
-	protected CompilationUnitCollector compilationUnitCollector;
-	protected NullCheckCollector checkCollector;
-	protected FeatureCollector featureCollector;
 
-	public JavaSourceProcessor() throws NoSuchMethodException,
-			SecurityException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		this.compilationUnitCollector = new CompilationUnitCollector();
-		this.checkCollector = new NullCheckCollector();
-		this.featureCollector = new FeatureCollector();
-	}
-
-	public void process(Path javaSourcePath) {
-		Stream.of(javaSourcePath).flatMap(this::collectCompilationUnit)
-				.peek(this::saveCompilationUnit)
-				.flatMap(this::collectNullChecks).peek(this::saveNullCheck)
-				.flatMap(this::collectFeatures).forEach(this::saveFeature);
-	}
-
-	protected Stream<CompilationUnit> collectCompilationUnit(Path path) {
-		try {
-			return Stream.of(this.compilationUnitCollector.collect(path));
-		} catch (Throwable throwable) {
-			throwable.printStackTrace();
+	@Override
+	public void write(List<? extends CompilationUnit> compilationUnits)
+			throws Exception {
+		// TODO should there be null checks?
+		for (CompilationUnit compilationUnit : compilationUnits) {
+			this.saveCompilationUnit(compilationUnit);
 		}
-		return Stream.of();
-	}
-
-	protected Stream<NullCheck> collectNullChecks(
-			CompilationUnit compilationUnit) {
-		try {
-			return this.checkCollector.collect(compilationUnit).stream();
-		} catch (Throwable throwable) {
-			throwable.printStackTrace();
-		}
-		return Stream.of();
-	}
-
-	protected Stream<Feature> collectFeatures(NullCheck nullCheck) {
-		try {
-			return this.featureCollector.collect(nullCheck).stream();
-		} catch (Throwable throwable) {
-			throwable.printStackTrace();
-		}
-		return Stream.of();
 	}
 
 	protected void saveCompilationUnit(CompilationUnit compilationUnit) {
@@ -129,5 +85,4 @@ public class JavaSourceProcessor {
 		}
 		return node;
 	}
-
 }

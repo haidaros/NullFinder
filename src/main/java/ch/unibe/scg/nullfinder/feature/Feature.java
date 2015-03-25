@@ -33,12 +33,12 @@ public class Feature {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "nullCheckId", nullable = false)
 	protected NullCheck nullCheck;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "feature")
+	protected List<Reason> reasons;
 	@Columns(columns = { @Column(name = "className", nullable = false),
 			@Column(name = "level", nullable = false) })
 	@Type(type = "ch.unibe.scg.nullfinder.jpa.type.ExtractorType")
 	protected IExtractor extractor;
-	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "feature")
-	protected List<Reason> reasons;
 
 	public Feature(NullCheck nullCheck, IExtractor extractor) {
 		this.nullCheck = nullCheck;
