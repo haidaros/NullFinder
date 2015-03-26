@@ -40,7 +40,7 @@ public class JavaSourceReader implements ItemReader<Path> {
 		if (this.javaSources.isEmpty()) {
 			return null;
 		}
-		return this.javaSources.get(0);
+		return this.javaSources.remove(0);
 	}
 
 }

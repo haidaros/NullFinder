@@ -78,7 +78,8 @@ public class Node {
 			javaParserCompilationUnit = javaParserCompilationUnit
 					.getParentNode();
 		}
-		return this.getCompilationUnit().equals(javaParserCompilationUnit)
+		return this.getJavaParserCompilationUnit().equals(
+				javaParserCompilationUnit)
 				&& this.getClassName().equals(
 						javaParserNode.getClass().getName())
 				&& this.getBeginLine() == javaParserNode.getBeginLine()

@@ -40,7 +40,15 @@ public class NullCheck {
 	}
 
 	public Node getNode() {
-		return node;
+		return this.node;
+	}
+
+	public List<Feature> getFeatures() {
+		return this.features;
+	}
+
+	public void setNode(Node node) {
+		this.node = node;
 	}
 
 }

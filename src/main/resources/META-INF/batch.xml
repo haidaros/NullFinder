@@ -21,13 +21,13 @@
 		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
 		<property name="jobRepository" ref="jobRepository" />
 	</bean>
-	
+
 	<context:component-scan base-package="ch.unibe.scg.nullfinder.batch" />
-	
+
 	<batch:job id="nullFinderJob">
 		<batch:step id="process">
 			<batch:tasklet>
-				<batch:chunk reader="javaSourceReader" writer="nullCheckWriter"
+				<batch:chunk reader="javaSourceReader" writer="compilationUnitWriter"
 					processor="javaSourceProcessor" commit-interval="1" skip-limit="1">
 					<batch:skippable-exception-classes>
 						<batch:include class="java.lang.Throwable" />
@@ -36,14 +36,5 @@
 			</batch:tasklet>
 		</batch:step>
 	</batch:job>
-	
-	
-	
-	
-	<!-- <bean id="javaSourceReader" class="ch.unibe.scg.nullfinder.batch.JavaSourceReader">
-	</bean>
-	<bean id="nullCheckWriter" class="ch.unibe.scg.nullfinder.batch.NullCheckWriter">
-	</bean>
-	<bean id="javaSourceProcessor" class="ch.unibe.scg.nullfinder.batch.JavaSourceProcessor">
-	</bean> -->
+
 </beans>

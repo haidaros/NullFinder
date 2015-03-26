@@ -1,5 +1,6 @@
 package ch.unibe.scg.nullfinder.feature.reason;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -10,7 +11,7 @@ import ch.unibe.scg.nullfinder.feature.Feature;
 @Entity
 public class NodeReason extends Reason {
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, cascade = CascadeType.ALL)
 	@JoinColumn(name = "nodeId", nullable = false)
 	protected Node node;
 
