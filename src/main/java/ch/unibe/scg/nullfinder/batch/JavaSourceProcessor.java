@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.stereotype.Component;
 
 import ch.unibe.scg.nullfinder.NullCheck;
 import ch.unibe.scg.nullfinder.ast.CompilationUnit;
@@ -18,6 +19,7 @@ import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 
 import com.github.javaparser.ParseException;
 
+@Component
 public class JavaSourceProcessor implements
 		ItemProcessor<Path, CompilationUnit> {
 

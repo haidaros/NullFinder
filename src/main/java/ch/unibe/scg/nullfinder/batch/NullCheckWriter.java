@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import ch.unibe.scg.nullfinder.NullCheck;
 import ch.unibe.scg.nullfinder.ast.CompilationUnit;
@@ -17,6 +18,7 @@ import ch.unibe.scg.nullfinder.jpa.repository.INodeRepository;
 import ch.unibe.scg.nullfinder.jpa.repository.INullCheckRepository;
 import ch.unibe.scg.nullfinder.jpa.repository.IReasonRepository;
 
+@Component
 public class NullCheckWriter implements ItemWriter<CompilationUnit> {
 
 	@Autowired
@@ -27,6 +29,9 @@ public class NullCheckWriter implements ItemWriter<CompilationUnit> {
 	protected IFeatureRepository featureRepository;
 	@Autowired
 	protected IReasonRepository reasonRepository;
+
+	public NullCheckWriter() {
+	}
 
 	@Override
 	public void write(List<? extends CompilationUnit> compilationUnits)

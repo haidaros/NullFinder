@@ -34,11 +34,14 @@
 			</batch:tasklet>
 		</batch:step>
 	</batch:job>
-
-	<bean id="javaSourceReader" class="ch.unibe.scg.nullfinder.batch.JavaSourceReader">
+	
+	
+	<context:component-scan base-package="ch.unibe.scg.nullfinder.batch" />
+	
+	<!-- <bean id="javaSourceReader" class="ch.unibe.scg.nullfinder.batch.JavaSourceReader">
 	</bean>
 	<bean id="nullCheckWriter" class="ch.unibe.scg.nullfinder.batch.NullCheckWriter">
 	</bean>
 	<bean id="javaSourceProcessor" class="ch.unibe.scg.nullfinder.batch.JavaSourceProcessor">
-	</bean>
+	</bean> -->
 </beans>
