@@ -13,22 +13,22 @@ import ch.unibe.scg.nullfinder.feature.Feature;
 import ch.unibe.scg.nullfinder.feature.reason.FeatureReason;
 import ch.unibe.scg.nullfinder.feature.reason.NodeReason;
 import ch.unibe.scg.nullfinder.feature.reason.Reason;
-import ch.unibe.scg.nullfinder.jpa.repository.IFeatureRepository;
-import ch.unibe.scg.nullfinder.jpa.repository.INodeRepository;
-import ch.unibe.scg.nullfinder.jpa.repository.INullCheckRepository;
-import ch.unibe.scg.nullfinder.jpa.repository.IReasonRepository;
+import ch.unibe.scg.nullfinder.jpa.repository.FeatureRepository;
+import ch.unibe.scg.nullfinder.jpa.repository.NodeRepository;
+import ch.unibe.scg.nullfinder.jpa.repository.NullCheckRepository;
+import ch.unibe.scg.nullfinder.jpa.repository.ReasonRepository;
 
 @Component
 public class NullCheckWriter implements ItemWriter<CompilationUnit> {
 
 	@Autowired
-	protected INodeRepository nodeRepository;
+	protected NodeRepository nodeRepository;	
 	@Autowired
-	protected INullCheckRepository nullCheckRepository;
+	protected NullCheckRepository nullCheckRepository;
 	@Autowired
-	protected IFeatureRepository featureRepository;
+	protected FeatureRepository featureRepository;
 	@Autowired
-	protected IReasonRepository reasonRepository;
+	protected ReasonRepository reasonRepository;
 
 	public NullCheckWriter() {
 	}
@@ -59,7 +59,8 @@ public class NullCheckWriter implements ItemWriter<CompilationUnit> {
 	}
 
 	protected void saveReason(Reason reason) {
-		// TODO naughty boy!
+		// TODO naughty boy! ---- Indeed really a naughty boy ;)
+		
 		if (reason instanceof FeatureReason) {
 			this.saveFeatureReason((FeatureReason) reason);
 		}
@@ -90,4 +91,21 @@ public class NullCheckWriter implements ItemWriter<CompilationUnit> {
 		}
 		return node;
 	}
+	
+	public NodeRepository getNodeRepository() {
+		return nodeRepository;
+	}
+
+	public NullCheckRepository getNullCheckRepository() {
+		return nullCheckRepository;
+	}
+
+	public FeatureRepository getFeatureRepository() {
+		return featureRepository;
+	}
+
+	public ReasonRepository getReasonRepository() {
+		return reasonRepository;
+	}
+ 
 }

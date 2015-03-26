@@ -31,8 +31,8 @@
 	</bean>
 
 	<!-- JPA Repositories -->
-	<jpa:repositories base-package="ch.unibe.scg.nullfinder.repository"></jpa:repositories>
-	
-	<import resource="classpath:META-INF/batch.xml" />
-	
+	<jpa:repositories base-package="ch.unibe.scg.nullfinder.jpa.repository"></jpa:repositories>
+
+	<import resource="batch.xml" />
+
 </beans>
