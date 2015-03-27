@@ -1,6 +1,6 @@
 package ch.unibe.scg.nullfinder.feature.extractor;
 
-import ch.unibe.scg.nullfinder.NullCheck;
+import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 public class UnextractableException extends Exception {
 

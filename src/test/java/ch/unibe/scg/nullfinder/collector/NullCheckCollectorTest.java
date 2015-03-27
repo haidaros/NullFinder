@@ -8,8 +8,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.unibe.scg.nullfinder.NullCheck;
-import ch.unibe.scg.nullfinder.ast.CompilationUnit;
+import ch.unibe.scg.nullfinder.jpa.entity.CompilationUnit;
+import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 public class NullCheckCollectorTest {
 

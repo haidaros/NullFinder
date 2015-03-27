@@ -1,6 +1,6 @@
-package ch.unibe.scg.nullfinder.feature;
+package ch.unibe.scg.nullfinder.jpa.entity;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -18,9 +18,7 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
 
-import ch.unibe.scg.nullfinder.NullCheck;
 import ch.unibe.scg.nullfinder.feature.extractor.IExtractor;
-import ch.unibe.scg.nullfinder.feature.reason.Reason;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "nullCheckId",
@@ -35,6 +33,8 @@ public class Feature {
 	protected NullCheck nullCheck;
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "feature")
 	protected List<Reason> reasons;
+	@OneToMany(mappedBy = "reasonFeature")
+	protected List<FeatureReason> featureReasons;
 	@Columns(columns = { @Column(name = "className", nullable = false),
 			@Column(name = "level", nullable = false) })
 	@Type(type = "ch.unibe.scg.nullfinder.jpa.type.ExtractorType")
@@ -42,8 +42,9 @@ public class Feature {
 
 	public Feature(NullCheck nullCheck, IExtractor extractor) {
 		this.nullCheck = nullCheck;
+		this.reasons = new ArrayList<>();
+		this.featureReasons = new ArrayList<>();
 		this.extractor = extractor;
-		this.reasons = new LinkedList<>();
 	}
 
 	/**
@@ -57,12 +58,32 @@ public class Feature {
 		return this.nullCheck;
 	}
 
-	public IExtractor getExtractor() {
-		return this.extractor;
+	public void setNullCheck(NullCheck nullCheck) {
+		this.nullCheck = nullCheck;
 	}
 
 	public List<Reason> getReasons() {
 		return this.reasons;
+	}
+
+	public void setReasons(List<Reason> reasons) {
+		this.reasons = reasons;
+	}
+
+	public IExtractor getExtractor() {
+		return this.extractor;
+	}
+
+	public void setExtractor(IExtractor extractor) {
+		this.extractor = extractor;
+	}
+
+	public List<FeatureReason> getFeatureReasons() {
+		return this.featureReasons;
+	}
+
+	public void setFeatureReasons(List<FeatureReason> featureReasons) {
+		this.featureReasons = featureReasons;
 	}
 
 }

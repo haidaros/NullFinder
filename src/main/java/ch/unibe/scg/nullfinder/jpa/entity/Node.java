@@ -1,5 +1,9 @@
-package ch.unibe.scg.nullfinder.ast;
+package ch.unibe.scg.nullfinder.jpa.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,9 +13,13 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+
+import ch.unibe.scg.nullfinder.ast.JavaParserNodeEqualityVisitor;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -20,10 +28,20 @@ import javax.persistence.UniqueConstraint;
 		"endLine", "endColumn" }))
 public class Node {
 
+	/**
+	 * Gets a cached version of a node for the specified AST parameters. Creates
+	 * a new node if there is no matching node found. A created node is then
+	 * registered in the cache and added to the compilation unit's nodes.
+	 *
+	 * @param javaParserNode
+	 * @return
+	 */
 	static public Node getCachedNode(CompilationUnit compilationUnit,
 			com.github.javaparser.ast.Node javaParserNode) {
 		if (javaParserNode.getData() == null) {
-			javaParserNode.setData(new Node(compilationUnit, javaParserNode));
+			Node node = new Node(compilationUnit, javaParserNode);
+			compilationUnit.getNodes().add(node);
+			javaParserNode.setData(node);
 		}
 		return (Node) javaParserNode.getData();
 	}
@@ -31,9 +49,13 @@ public class Node {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	protected Long id;
+	@OneToOne(cascade = CascadeType.ALL, optional = true, mappedBy = "node")
+	protected NullCheck nullCheck;
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "compilationUnitId", nullable = true)
 	protected CompilationUnit compilationUnit;
+	@OneToMany(mappedBy = "node")
+	protected List<NodeReason> nodeReasons;
 	@Column(name = "className", nullable = false)
 	protected String className;
 	@Column(name = "beginLine", nullable = false)
@@ -49,6 +71,7 @@ public class Node {
 
 	public Node(CompilationUnit compilationUnit, String className,
 			int beginLine, int beginColumn, int endLine, int endColumn) {
+		this.nodeReasons = new ArrayList<>();
 		this.compilationUnit = compilationUnit;
 		this.className = className;
 		this.beginLine = beginLine;
@@ -75,7 +98,7 @@ public class Node {
 	/**
 	 * Checks if the specified JavaParser node matches this by comparing the
 	 * compilation unit, the class and window.
-	 * 
+	 *
 	 * @param javaParserNode
 	 * @return true if it matches, false otherwise
 	 */
@@ -115,24 +138,68 @@ public class Node {
 		return this.compilationUnit;
 	}
 
+	public void setCompilationUnit(CompilationUnit compilationUnit) {
+		this.compilationUnit = compilationUnit;
+	}
+
+	public NullCheck getNullCheck() {
+		return this.nullCheck;
+	}
+
+	public void setNullCheck(NullCheck nullCheck) {
+		this.nullCheck = nullCheck;
+	}
+
+	public List<NodeReason> getNodeReasons() {
+		return this.nodeReasons;
+	}
+
+	public void setNodeReasons(List<NodeReason> nodeReasons) {
+		this.nodeReasons = nodeReasons;
+	}
+
 	public String getClassName() {
 		return this.className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
 	}
 
 	public int getBeginLine() {
 		return this.beginLine;
 	}
 
+	public void setBeginLine(int beginLine) {
+		this.beginLine = beginLine;
+	}
+
 	public int getBeginColumn() {
 		return this.beginColumn;
+	}
+
+	public void setBeginColumn(int beginColumn) {
+		this.beginColumn = beginColumn;
 	}
 
 	public int getEndLine() {
 		return this.endLine;
 	}
 
+	public void setEndLine(int endLine) {
+		this.endLine = endLine;
+	}
+
 	public int getEndColumn() {
 		return this.endColumn;
+	}
+
+	public void setEndColumn(int endColumn) {
+		this.endColumn = endColumn;
+	}
+
+	public void setJavaParserNode(com.github.javaparser.ast.Node javaParserNode) {
+		this.javaParserNode = javaParserNode;
 	}
 
 }

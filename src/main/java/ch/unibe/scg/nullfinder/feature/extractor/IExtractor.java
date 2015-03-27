@@ -2,8 +2,8 @@ package ch.unibe.scg.nullfinder.feature.extractor;
 
 import java.util.List;
 
-import ch.unibe.scg.nullfinder.NullCheck;
-import ch.unibe.scg.nullfinder.feature.Feature;
+import ch.unibe.scg.nullfinder.jpa.entity.Feature;
+import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 public interface IExtractor {
 

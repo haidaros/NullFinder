@@ -1,4 +1,4 @@
-package ch.unibe.scg.nullfinder.feature.reason;
+package ch.unibe.scg.nullfinder.jpa.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,8 +8,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
-import ch.unibe.scg.nullfinder.feature.Feature;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -31,6 +29,14 @@ public class Reason {
 	 */
 	protected Reason() {
 
+	}
+
+	public Feature getFeature() {
+		return this.feature;
+	}
+
+	public void setFeature(Feature feature) {
+		this.feature = feature;
 	}
 
 }

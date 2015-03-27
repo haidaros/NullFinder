@@ -9,6 +9,7 @@ import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
+@Deprecated
 public class AssignmentCollector {
 
 	public static class AssignmentVisitor extends VoidVisitorAdapter<NameExpr> {

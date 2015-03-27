@@ -1,17 +1,13 @@
-package ch.unibe.scg.nullfinder.feature.reason;
+package ch.unibe.scg.nullfinder.jpa.entity;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import ch.unibe.scg.nullfinder.ast.Node;
-import ch.unibe.scg.nullfinder.feature.Feature;
-
 @Entity
 public class NodeReason extends Reason {
 
-	@ManyToOne(optional = false, cascade = CascadeType.ALL)
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "nodeId", nullable = false)
 	protected Node node;
 

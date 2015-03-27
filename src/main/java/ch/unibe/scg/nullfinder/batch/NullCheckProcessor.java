@@ -1,27 +1,31 @@
-package ch.unibe.scg.nullfinder.collector;
+package ch.unibe.scg.nullfinder.batch;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.reflections.Reflections;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.stereotype.Component;
 
-import ch.unibe.scg.nullfinder.NullCheck;
-import ch.unibe.scg.nullfinder.feature.Feature;
 import ch.unibe.scg.nullfinder.feature.extractor.IExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
+import ch.unibe.scg.nullfinder.jpa.entity.Feature;
+import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
-public class FeatureCollector implements ICollector<NullCheck, List<Feature>> {
+@Component
+public class NullCheckProcessor implements
+		ItemProcessor<NullCheck, List<Feature>> {
 
 	protected SortedMap<Integer, Set<IExtractor>> extractors;
 
-	public FeatureCollector() throws NoSuchMethodException, SecurityException,
-			InstantiationException, IllegalAccessException,
+	public NullCheckProcessor() throws NoSuchMethodException,
+			SecurityException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
 		this.extractors = new TreeMap<>();
 		Reflections reflections = new Reflections();
@@ -42,19 +46,17 @@ public class FeatureCollector implements ICollector<NullCheck, List<Feature>> {
 	}
 
 	@Override
-	public List<Feature> collect(NullCheck nullCheck) throws UnextractableException {
-		List<Feature> features = new LinkedList<>();
+	public List<Feature> process(NullCheck nullCheck) {
+		List<Feature> features = new ArrayList<>();
 		for (Set<IExtractor> levelExtractors : this.extractors.values()) {
 			for (IExtractor extractor : levelExtractors) {
 				try {
 					features.add(extractor.extract(nullCheck, features));
 				} catch (UnextractableException e) {
-					// noop
+					// don't care, null checks without any features can be
+					// detected later
 				}
 			}
-		}
-		if (features.isEmpty()) {
-			throw new UnextractableException(nullCheck);
 		}
 		return features;
 	}

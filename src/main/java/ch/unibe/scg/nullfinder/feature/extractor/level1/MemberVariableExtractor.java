@@ -2,14 +2,12 @@ package ch.unibe.scg.nullfinder.feature.extractor.level1;
 
 import java.util.List;
 
-import ch.unibe.scg.nullfinder.NullCheck;
-import ch.unibe.scg.nullfinder.ast.CompilationUnit;
-import ch.unibe.scg.nullfinder.ast.Node;
-import ch.unibe.scg.nullfinder.feature.Feature;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
-import ch.unibe.scg.nullfinder.feature.reason.FeatureReason;
-import ch.unibe.scg.nullfinder.feature.reason.NodeReason;
-import ch.unibe.scg.nullfinder.feature.reason.Reason;
+import ch.unibe.scg.nullfinder.jpa.entity.Feature;
+import ch.unibe.scg.nullfinder.jpa.entity.Node;
+import ch.unibe.scg.nullfinder.jpa.entity.NodeReason;
+import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
+import ch.unibe.scg.nullfinder.jpa.entity.Reason;
 
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -24,8 +22,6 @@ public class MemberVariableExtractor extends AbstractDeclarationExtractor {
 	protected Feature safeExtract(NullCheck nullCheck, List<Feature> features)
 			throws UnextractableException {
 		// TODO there is some dirty stuff going on here...
-		CompilationUnit compilationUnit = nullCheck.getNode()
-				.getCompilationUnit();
 		Feature nameExtractorFeature = this.extractNameExtractorFeature(
 				nullCheck, features);
 		Reason reason = nameExtractorFeature.getReasons().iterator().next();
@@ -39,12 +35,12 @@ public class MemberVariableExtractor extends AbstractDeclarationExtractor {
 				try {
 					VariableDeclarator variableDeclarator = this
 							.findDeclaration(clazz.getMembers(), suspect);
-					Feature feature = new Feature(nullCheck, this);
-					Node node = Node.getCachedNode(compilationUnit,
+					Node node = this.createAndConnectNode(nullCheck,
 							variableDeclarator);
-					feature.getReasons().add(
-							new FeatureReason(feature, nameExtractorFeature));
-					feature.getReasons().add(new NodeReason(feature, node));
+					Feature feature = this.createAndConnectFeature(nullCheck);
+					this.createAndConnectNodeReason(feature, node);
+					this.createAndConnectFeatureReason(feature,
+							nameExtractorFeature);
 					return feature;
 				} catch (DeclarationNotFoundException exception) {
 					// noop
@@ -57,13 +53,13 @@ public class MemberVariableExtractor extends AbstractDeclarationExtractor {
 								.findDeclaration(
 										objectCreation.getAnonymousClassBody(),
 										suspect);
-						Feature feature = new Feature(nullCheck, this);
-						Node node = Node.getCachedNode(compilationUnit,
+						Node node = this.createAndConnectNode(nullCheck,
 								variableDeclarator);
-						feature.getReasons()
-								.add(new FeatureReason(feature,
-										nameExtractorFeature));
-						feature.getReasons().add(new NodeReason(feature, node));
+						Feature feature = this
+								.createAndConnectFeature(nullCheck);
+						this.createAndConnectNodeReason(feature, node);
+						this.createAndConnectFeatureReason(feature,
+								nameExtractorFeature);
 						return feature;
 					} catch (DeclarationNotFoundException exception) {
 						// noop

@@ -1,4 +1,4 @@
-package ch.unibe.scg.nullfinder.ast;
+package ch.unibe.scg.nullfinder.jpa.entity;
 
 import java.io.ByteArrayInputStream;
 import java.nio.file.Path;
@@ -73,6 +73,30 @@ public class CompilationUnit extends Node {
 	@Override
 	public CompilationUnit getCompilationUnit() {
 		return this;
+	}
+
+	public List<Node> getNodes() {
+		return this.nodes;
+	}
+
+	public void setNodes(List<Node> nodes) {
+		this.nodes = nodes;
+	}
+
+	public Path getPath() {
+		return this.path;
+	}
+
+	public void setPath(Path path) {
+		this.path = path;
+	}
+
+	public String getSource() {
+		return this.source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
 	}
 
 }

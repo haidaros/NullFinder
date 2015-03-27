@@ -2,9 +2,9 @@ package ch.unibe.scg.nullfinder.feature.extractor.level1;
 
 import java.util.List;
 
-import ch.unibe.scg.nullfinder.NullCheck;
-import ch.unibe.scg.nullfinder.feature.Feature;
 import ch.unibe.scg.nullfinder.feature.extractor.level0.NameExtractor;
+import ch.unibe.scg.nullfinder.jpa.entity.Feature;
+import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 public abstract class AbstractDeclarationExtractor extends
 		AbstractLevel1Extractor {

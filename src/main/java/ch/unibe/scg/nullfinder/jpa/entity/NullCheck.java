@@ -1,4 +1,4 @@
-package ch.unibe.scg.nullfinder;
+package ch.unibe.scg.nullfinder.jpa.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-
-import ch.unibe.scg.nullfinder.ast.Node;
-import ch.unibe.scg.nullfinder.feature.Feature;
 
 @Entity
 public class NullCheck {
@@ -39,12 +36,16 @@ public class NullCheck {
 
 	}
 
-	public Node getNode() {
-		return this.node;
-	}
-
 	public List<Feature> getFeatures() {
 		return this.features;
+	}
+
+	public void setFeatures(List<Feature> features) {
+		this.features = features;
+	}
+
+	public Node getNode() {
+		return this.node;
 	}
 
 	public void setNode(Node node) {

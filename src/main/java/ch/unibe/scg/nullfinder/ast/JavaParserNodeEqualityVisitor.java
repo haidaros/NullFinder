@@ -1,5 +1,7 @@
 package ch.unibe.scg.nullfinder.ast;
 
+import ch.unibe.scg.nullfinder.jpa.entity.Node;
+
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.TypeParameter;

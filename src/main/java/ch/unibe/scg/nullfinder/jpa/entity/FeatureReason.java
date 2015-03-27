@@ -1,10 +1,8 @@
-package ch.unibe.scg.nullfinder.feature.reason;
+package ch.unibe.scg.nullfinder.jpa.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
-import ch.unibe.scg.nullfinder.feature.Feature;
 
 @Entity
 public class FeatureReason extends Reason {
@@ -23,6 +21,14 @@ public class FeatureReason extends Reason {
 	 */
 	protected FeatureReason() {
 		super();
+	}
+
+	public Feature getReasonFeature() {
+		return this.reasonFeature;
+	}
+
+	public void setReasonFeature(Feature reasonFeature) {
+		this.reasonFeature = reasonFeature;
 	}
 
 }
