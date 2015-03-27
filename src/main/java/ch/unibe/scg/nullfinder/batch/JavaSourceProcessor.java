@@ -18,6 +18,7 @@ import ch.unibe.scg.nullfinder.feature.Feature;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 
 import com.github.javaparser.ParseException;
+import com.github.javaparser.TokenMgrError;
 
 @Component
 public class JavaSourceProcessor implements
@@ -37,7 +38,8 @@ public class JavaSourceProcessor implements
 
 	@Override
 	public Entry<CompilationUnit, List<NullCheck>> process(Path javaSourcePath)
-			throws ParseException, IOException, UnextractableException {
+			throws ParseException, TokenMgrError, IOException,
+			UnextractableException {
 		CompilationUnit compilationUnit = this.compilationUnitCollector
 				.collect(javaSourcePath);
 		List<NullCheck> nullChecks = this.nullCheckCollector

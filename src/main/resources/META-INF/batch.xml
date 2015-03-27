@@ -28,9 +28,9 @@
 		<batch:step id="process">
 			<batch:tasklet>
 				<batch:chunk reader="javaSourceReader" writer="compilationUnitWriter"
-					processor="javaSourceProcessor" commit-interval="1" skip-limit="1">
+					processor="javaSourceProcessor" commit-interval="10" skip-limit="2147483647">
 					<batch:skippable-exception-classes>
-						<batch:include class="java.lang.Throwable" />
+						<batch:include class="java.lang.Exception" />
 					</batch:skippable-exception-classes>
 				</batch:chunk>
 			</batch:tasklet>

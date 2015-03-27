@@ -33,6 +33,7 @@
 	<!-- JPA Repositories -->
 	<jpa:repositories base-package="ch.unibe.scg.nullfinder.jpa.repository"></jpa:repositories>
 
+	<!-- Batch -->
 	<import resource="batch.xml" />
 
 </beans>
