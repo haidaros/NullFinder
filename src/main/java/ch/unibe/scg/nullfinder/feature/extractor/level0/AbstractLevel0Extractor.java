@@ -22,22 +22,21 @@ public abstract class AbstractLevel0Extractor extends AbstractExtractor {
 	public Feature extract(NullCheck nullCheck, List<Feature> features)
 			throws UnextractableException {
 		assert nullCheck.getNode().getJavaParserNode().getParentNode() instanceof BinaryExpr;
-		BinaryExpr binary = (BinaryExpr) nullCheck.getNode().getJavaParserNode()
-				.getParentNode();
-		CompilationUnit compilationUnit = nullCheck.getNode().getCompilationUnit();
+		BinaryExpr binary = (BinaryExpr) nullCheck.getNode()
+				.getJavaParserNode().getParentNode();
+		CompilationUnit compilationUnit = nullCheck.getNode()
+				.getCompilationUnit();
 		Class<?> comparand = this.getComparand();
 		if (comparand.isInstance(binary.getLeft())) {
 			Feature feature = new Feature(nullCheck, this);
-			feature.getReasons().add(
-					new NodeReason(feature, new Node(compilationUnit, binary
-							.getLeft())));
+			Node node = Node.getCachedNode(compilationUnit, binary.getLeft());
+			feature.getReasons().add(new NodeReason(feature, node));
 			return feature;
 		}
 		if (comparand.isInstance(binary.getRight())) {
 			Feature feature = new Feature(nullCheck, this);
-			feature.getReasons().add(
-					new NodeReason(feature, new Node(compilationUnit, binary
-							.getRight())));
+			Node node = Node.getCachedNode(compilationUnit, binary.getRight());
+			feature.getReasons().add(new NodeReason(feature, node));
 			return feature;
 		}
 		throw new UnextractableException(nullCheck);

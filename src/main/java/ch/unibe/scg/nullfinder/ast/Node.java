@@ -20,6 +20,14 @@ import javax.persistence.UniqueConstraint;
 		"endLine", "endColumn" }))
 public class Node {
 
+	static public Node getCachedNode(CompilationUnit compilationUnit,
+			com.github.javaparser.ast.Node javaParserNode) {
+		if (javaParserNode.getData() == null) {
+			javaParserNode.setData(new Node(compilationUnit, javaParserNode));
+		}
+		return (Node) javaParserNode.getData();
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	protected Long id;

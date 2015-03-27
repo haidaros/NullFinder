@@ -33,7 +33,8 @@ public class NullCheckCollector implements
 				CompilationUnit compilationUnit) {
 			super.visit(javaParserNode, compilationUnit);
 			if (javaParserNode.getParentNode() instanceof BinaryExpr) {
-				Node node = new Node(compilationUnit, javaParserNode);
+				Node node = Node.getCachedNode(compilationUnit,
+						javaParserNode);
 				this.nullChecks.add(new NullCheck(node));
 			}
 		}

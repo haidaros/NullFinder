@@ -16,7 +16,10 @@ public class CompilationUnitCollector implements
 			IOException {
 		com.github.javaparser.ast.CompilationUnit javaParserCompilationUnit = JavaParser
 				.parse(path.toFile());
-		return new CompilationUnit(javaParserCompilationUnit, path);
+		CompilationUnit compilationUnit = new CompilationUnit(
+				javaParserCompilationUnit, path);
+		javaParserCompilationUnit.setData(compilationUnit);
+		return compilationUnit;
 	}
 
 }

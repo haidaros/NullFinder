@@ -24,9 +24,10 @@ public class MemberVariableExtractor extends AbstractDeclarationExtractor {
 	protected Feature safeExtract(NullCheck nullCheck, List<Feature> features)
 			throws UnextractableException {
 		// TODO there is some dirty stuff going on here...
-		CompilationUnit compilationUnit = nullCheck.getNode().getCompilationUnit();
-		Feature nameExtractorFeature = this.extractNameExtractorFeature(nullCheck,
-				features);
+		CompilationUnit compilationUnit = nullCheck.getNode()
+				.getCompilationUnit();
+		Feature nameExtractorFeature = this.extractNameExtractorFeature(
+				nullCheck, features);
 		Reason reason = nameExtractorFeature.getReasons().iterator().next();
 		NameExpr suspect = (NameExpr) ((NodeReason) reason).getNode()
 				.getJavaParserNode();
@@ -39,11 +40,11 @@ public class MemberVariableExtractor extends AbstractDeclarationExtractor {
 					VariableDeclarator variableDeclarator = this
 							.findDeclaration(clazz.getMembers(), suspect);
 					Feature feature = new Feature(nullCheck, this);
+					Node node = Node.getCachedNode(compilationUnit,
+							variableDeclarator);
 					feature.getReasons().add(
 							new FeatureReason(feature, nameExtractorFeature));
-					feature.getReasons().add(
-							new NodeReason(feature, new Node(compilationUnit,
-									variableDeclarator)));
+					feature.getReasons().add(new NodeReason(feature, node));
 					return feature;
 				} catch (DeclarationNotFoundException exception) {
 					// noop
@@ -57,12 +58,12 @@ public class MemberVariableExtractor extends AbstractDeclarationExtractor {
 										objectCreation.getAnonymousClassBody(),
 										suspect);
 						Feature feature = new Feature(nullCheck, this);
+						Node node = Node.getCachedNode(compilationUnit,
+								variableDeclarator);
 						feature.getReasons()
 								.add(new FeatureReason(feature,
 										nameExtractorFeature));
-						feature.getReasons().add(
-								new NodeReason(feature, new Node(
-										compilationUnit, variableDeclarator)));
+						feature.getReasons().add(new NodeReason(feature, node));
 						return feature;
 					} catch (DeclarationNotFoundException exception) {
 						// noop
