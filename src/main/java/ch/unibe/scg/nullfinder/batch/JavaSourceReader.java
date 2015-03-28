@@ -17,14 +17,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class JavaSourceReader implements ItemReader<Path> {
 
+	protected String root;
 	protected List<Path> javaSources;
-
-	public JavaSourceReader() throws IOException {
-		// TODO make root configurable
-		Path root = Paths
-				.get("../intellij-community/java/debugger/impl/src/com/intellij/debugger");
-		this.javaSources = this.process(root).collect(Collectors.toList());
-	}
 
 	public Stream<Path> process(Path root) throws IOException {
 		return Files.walk(root).filter(this::isJavaSource);
@@ -41,6 +35,16 @@ public class JavaSourceReader implements ItemReader<Path> {
 			return null;
 		}
 		return this.javaSources.remove(0);
+	}
+
+	public String getRoot() {
+		return this.root;
+	}
+
+	public void setRoot(String root) throws IOException {
+		this.root = root;
+		this.javaSources = this.process(Paths.get(this.root)).collect(
+				Collectors.toList());
 	}
 
 }
