@@ -1,19 +1,17 @@
-package ch.unibe.scg.nullfinder.feature.extractor.level0;
+package ch.unibe.scg.nullfinder.feature.extractor;
 
 import java.util.List;
 
-import ch.unibe.scg.nullfinder.feature.extractor.AbstractExtractor;
-import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 import com.github.javaparser.ast.expr.BinaryExpr;
 
-public abstract class AbstractLevel0Extractor extends AbstractExtractor {
+public abstract class AbstractComparandExtractor extends AbstractExtractor {
 
-	public AbstractLevel0Extractor() {
-		super(0);
+	public AbstractComparandExtractor(int level) {
+		super(level);
 	}
 
 	@Override
