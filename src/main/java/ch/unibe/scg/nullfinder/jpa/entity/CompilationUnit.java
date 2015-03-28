@@ -1,6 +1,8 @@
 package ch.unibe.scg.nullfinder.jpa.entity;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +41,9 @@ public class CompilationUnit extends Node {
 
 	public CompilationUnit(
 			com.github.javaparser.ast.CompilationUnit javaParserCompilationUnit,
-			Path path) {
-		this(javaParserCompilationUnit, path, javaParserCompilationUnit
-				.toString());
+			Path path) throws IOException {
+		this(javaParserCompilationUnit, path, new String(
+				Files.readAllBytes(path)));
 	}
 
 	/**
