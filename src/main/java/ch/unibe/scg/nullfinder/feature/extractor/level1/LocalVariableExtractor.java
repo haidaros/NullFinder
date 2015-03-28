@@ -3,7 +3,7 @@ package ch.unibe.scg.nullfinder.feature.extractor.level1;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.unibe.scg.nullfinder.feature.extractor.AbstractDeclarationExtractor;
+import ch.unibe.scg.nullfinder.feature.extractor.AbstractNameDependentExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.Node;
@@ -19,7 +19,7 @@ import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 
-public class LocalVariableExtractor extends AbstractDeclarationExtractor {
+public class LocalVariableExtractor extends AbstractNameDependentExtractor {
 
 	public LocalVariableExtractor() {
 		super(1);

@@ -15,7 +15,8 @@ public class UnextractableException extends Exception {
 
 	@Override
 	public String toString() {
-		return String.format("%s: %s", super.toString(), this.nullCheck.toString());
+		return String.format("%s: %s", super.toString(),
+				this.nullCheck.toString());
 	}
 
 }

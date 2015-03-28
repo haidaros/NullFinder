@@ -6,10 +6,10 @@ import ch.unibe.scg.nullfinder.feature.extractor.level0.NameExtractor;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
-public abstract class AbstractDeclarationExtractor extends
+public abstract class AbstractNameDependentExtractor extends
 		AbstractDependentExtractor {
 
-	public AbstractDeclarationExtractor(int level) {
+	public AbstractNameDependentExtractor(int level) {
 		super(level);
 	}
 

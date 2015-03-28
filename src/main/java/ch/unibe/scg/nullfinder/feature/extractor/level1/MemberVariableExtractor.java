@@ -2,7 +2,7 @@ package ch.unibe.scg.nullfinder.feature.extractor.level1;
 
 import java.util.List;
 
-import ch.unibe.scg.nullfinder.feature.extractor.AbstractDeclarationExtractor;
+import ch.unibe.scg.nullfinder.feature.extractor.AbstractNameDependentExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.Node;
@@ -17,7 +17,7 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 
-public class MemberVariableExtractor extends AbstractDeclarationExtractor {
+public class MemberVariableExtractor extends AbstractNameDependentExtractor {
 
 	public MemberVariableExtractor() {
 		super(1);

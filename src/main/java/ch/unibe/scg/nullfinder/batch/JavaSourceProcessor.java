@@ -13,7 +13,8 @@ import com.github.javaparser.ParseException;
 import com.github.javaparser.TokenMgrError;
 
 @Component
-public class JavaSourceProcessor implements ItemProcessor<Path, CompilationUnit> {
+public class JavaSourceProcessor implements
+		ItemProcessor<Path, CompilationUnit> {
 
 	@Override
 	public CompilationUnit process(Path javaSourcePath)

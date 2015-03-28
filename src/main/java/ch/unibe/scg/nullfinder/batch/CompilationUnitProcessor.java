@@ -1,6 +1,6 @@
 package ch.unibe.scg.nullfinder.batch;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.batch.item.ItemProcessor;
@@ -16,19 +16,19 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 @Component
 public class CompilationUnitProcessor implements
-ItemProcessor<CompilationUnit, List<NullCheck>> {
+		ItemProcessor<CompilationUnit, List<NullCheck>> {
 
-	public static class NullCheckNodeVisitor extends
-	VoidVisitorAdapter<CompilationUnit> {
+	public static class NullLiteralVisitor extends
+			VoidVisitorAdapter<CompilationUnit> {
 
 		protected List<NullCheck> nullChecks;
 
-		public NullCheckNodeVisitor() {
+		public NullLiteralVisitor() {
 			super();
-			this.nullChecks = new LinkedList<>();
+			this.nullChecks = new ArrayList<>();
 		}
 
-		public List<NullCheck> getChecks() {
+		public List<NullCheck> getNullChecks() {
 			return this.nullChecks;
 		}
 
@@ -36,22 +36,23 @@ ItemProcessor<CompilationUnit, List<NullCheck>> {
 		public void visit(NullLiteralExpr javaParserNode,
 				CompilationUnit compilationUnit) {
 			super.visit(javaParserNode, compilationUnit);
-			if (javaParserNode.getParentNode() instanceof BinaryExpr) {
-				Node node = Node.getCachedNode(compilationUnit, javaParserNode);
-				NullCheck nullCheck = new NullCheck(node);
-				node.setNullCheck(nullCheck);
-				this.nullChecks.add(nullCheck);
+			if (!(javaParserNode.getParentNode() instanceof BinaryExpr)) {
+				return;
 			}
+			Node node = Node.getCachedNode(compilationUnit, javaParserNode);
+			NullCheck nullCheck = new NullCheck(node);
+			node.setNullCheck(nullCheck);
+			this.nullChecks.add(nullCheck);
 		}
 
 	}
 
 	@Override
 	public List<NullCheck> process(CompilationUnit compilationUnit) {
-		NullCheckNodeVisitor visitor = new NullCheckNodeVisitor();
+		NullLiteralVisitor visitor = new NullLiteralVisitor();
 		visitor.visit(compilationUnit.getJavaParserCompilationUnit(),
 				compilationUnit);
-		return visitor.getChecks();
+		return visitor.getNullChecks();
 	}
 
 }
