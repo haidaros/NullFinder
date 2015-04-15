@@ -3,11 +3,9 @@ package ch.unibe.scg.nullfinder.feature.extractor;
 import java.util.List;
 
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
-import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 import com.github.javaparser.ast.expr.BinaryExpr;
-import com.github.javaparser.ast.expr.Expression;
 
 public abstract class AbstractComparandExtractor extends AbstractExtractor {
 
@@ -34,11 +32,9 @@ public abstract class AbstractComparandExtractor extends AbstractExtractor {
 	}
 
 	protected Feature getCreatedAndConnectedFeature(NullCheck nullCheck,
-			Expression expression) {
-		Node node = this.createAndConnectNode(nullCheck, expression);
-		Feature feature = this.createAndConnectFeature(nullCheck);
-		this.createAndConnectNodeReason(feature, node);
-		return feature;
+			com.github.javaparser.ast.Node javaParserNode) {
+		return this.addFeature(nullCheck).addNodeReason(javaParserNode)
+				.getEntity();
 	}
 
 	abstract protected Class<?> getComparandClass();

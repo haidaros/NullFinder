@@ -19,9 +19,8 @@ public class HeuristicMemberVariableExtractor extends
 			throws UnextractableException {
 		Feature nameExtractorFeature = this.extractNameExtractorFeature(
 				nullCheck, features);
-		Feature feature = this.createAndConnectFeature(nullCheck);
-		this.createAndConnectFeatureReason(feature, nameExtractorFeature);
-		return feature;
+		return this.addFeature(nullCheck)
+				.addFeatureReason(nameExtractorFeature).getEntity();
 	}
 
 	@Override

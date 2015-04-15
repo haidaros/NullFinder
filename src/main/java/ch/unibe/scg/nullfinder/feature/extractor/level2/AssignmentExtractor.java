@@ -10,7 +10,6 @@ import ch.unibe.scg.nullfinder.feature.extractor.AbstractNameDependentExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 import ch.unibe.scg.nullfinder.jpa.entity.CompilationUnit;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
-import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NodeReason;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 import ch.unibe.scg.nullfinder.jpa.entity.Reason;
@@ -25,16 +24,14 @@ public class AssignmentExtractor extends AbstractNameDependentExtractor {
 
 		protected static final Logger LOGGER = LogManager.getLogger();
 
-		protected CompilationUnit compilationUnit;
-		protected List<Node> assigments;
+		protected List<com.github.javaparser.ast.Node> assigments;
 
-		public AssignmentVisitor(CompilationUnit compilationUnit) {
+		public AssignmentVisitor() {
 			super();
-			this.compilationUnit = compilationUnit;
 			this.assigments = new LinkedList<>();
 		}
 
-		public List<Node> getAssignments() {
+		public List<com.github.javaparser.ast.Node> getAssignments() {
 			return this.assigments;
 		}
 
@@ -53,9 +50,7 @@ public class AssignmentExtractor extends AbstractNameDependentExtractor {
 			if (!candidate.getName().equals(suspect.getName())) {
 				return;
 			}
-			Node assignment = Node.getCachedNode(this.compilationUnit,
-					javaParserNode);
-			this.assigments.add(assignment);
+			this.assigments.add(javaParserNode);
 		}
 
 	}
@@ -74,18 +69,16 @@ public class AssignmentExtractor extends AbstractNameDependentExtractor {
 		Reason reason = nameExtractorFeature.getReasons().iterator().next();
 		NameExpr suspect = (NameExpr) ((NodeReason) reason).getNode()
 				.getJavaParserNode();
-		AssignmentVisitor visitor = new AssignmentVisitor(compilationUnit);
+		AssignmentVisitor visitor = new AssignmentVisitor();
 		visitor.visit(compilationUnit.getJavaParserCompilationUnit(), suspect);
-		List<Node> assignments = visitor.getAssignments();
+		List<com.github.javaparser.ast.Node> assignments = visitor
+				.getAssignments();
 		if (assignments.isEmpty()) {
 			throw new UnextractableException(nullCheck);
 		}
-		Feature feature = this.createAndConnectFeature(nullCheck);
-		this.createAndConnectFeatureReason(feature, nameExtractorFeature);
-		for (Node assignment : assignments) {
-			this.createAndConnectNodeReason(feature, assignment);
-		}
-		return feature;
+		return this.addFeature(nullCheck)
+				.addFeatureReason(nameExtractorFeature)
+				.addNodeReasons(assignments).getEntity();
 	}
 
 }

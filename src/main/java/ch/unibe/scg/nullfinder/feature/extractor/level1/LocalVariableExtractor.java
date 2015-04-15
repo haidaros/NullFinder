@@ -6,7 +6,6 @@ import java.util.List;
 import ch.unibe.scg.nullfinder.feature.extractor.AbstractNameDependentExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
-import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NodeReason;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 import ch.unibe.scg.nullfinder.jpa.entity.Reason;
@@ -67,14 +66,10 @@ public class LocalVariableExtractor extends AbstractNameDependentExtractor {
 								.findDeclaration(
 										(VariableDeclarationExpr) child,
 										suspect);
-						Node node = this.createAndConnectNode(nullCheck,
-								variableDeclarator);
-						Feature feature = this
-								.createAndConnectFeature(nullCheck);
-						this.createAndConnectNodeReason(feature, node);
-						this.createAndConnectFeatureReason(feature,
-								nameExtractorFeature);
-						return feature;
+						return this.addFeature(nullCheck)
+								.addNodeReason(variableDeclarator)
+								.addFeatureReason(nameExtractorFeature)
+								.getEntity();
 					} catch (DeclarationNotFoundException exception) {
 						// noop
 					}
@@ -87,14 +82,10 @@ public class LocalVariableExtractor extends AbstractNameDependentExtractor {
 									.findDeclaration(
 											(VariableDeclarationExpr) expression,
 											suspect);
-							Node node = this.createAndConnectNode(nullCheck,
-									variableDeclarator);
-							Feature feature = this
-									.createAndConnectFeature(nullCheck);
-							this.createAndConnectNodeReason(feature, node);
-							this.createAndConnectFeatureReason(feature,
-									nameExtractorFeature);
-							return feature;
+							return this.addFeature(nullCheck)
+									.addNodeReason(variableDeclarator)
+									.addFeatureReason(nameExtractorFeature)
+									.getEntity();
 						} catch (DeclarationNotFoundException exception) {
 							// noop
 						}
@@ -103,14 +94,10 @@ public class LocalVariableExtractor extends AbstractNameDependentExtractor {
 						if (assignment.getTarget() instanceof NameExpr) {
 							NameExpr name = (NameExpr) assignment.getTarget();
 							if (suspect.getName().equals(name.getName())) {
-								Node node = this.createAndConnectNode(
-										nullCheck, name);
-								Feature feature = this
-										.createAndConnectFeature(nullCheck);
-								this.createAndConnectNodeReason(feature, node);
-								this.createAndConnectFeatureReason(feature,
-										nameExtractorFeature);
-								return feature;
+								return this.addFeature(nullCheck)
+										.addNodeReason(name)
+										.addFeatureReason(nameExtractorFeature)
+										.getEntity();
 							}
 						}
 						// TODO what if the target is not a name expression?

@@ -5,7 +5,6 @@ import java.util.List;
 import ch.unibe.scg.nullfinder.feature.extractor.AbstractNameDependentExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
-import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NodeReason;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 import ch.unibe.scg.nullfinder.jpa.entity.Reason;
@@ -41,14 +40,10 @@ public class ParameterExtractor extends AbstractNameDependentExtractor {
 					try {
 						Parameter parameter = this.findDeclaration(
 								method.getParameters(), suspect);
-						Node node = this.createAndConnectNode(nullCheck,
-								parameter);
-						Feature feature = this
-								.createAndConnectFeature(nullCheck);
-						this.createAndConnectNodeReason(feature, node);
-						this.createAndConnectFeatureReason(feature,
-								nameExtractorFeature);
-						return feature;
+						return this.addFeature(nullCheck)
+								.addNodeReason(parameter)
+								.addFeatureReason(nameExtractorFeature)
+								.getEntity();
 					} catch (DeclarationNotFoundException exception) {
 						// noop
 					}
@@ -60,14 +55,10 @@ public class ParameterExtractor extends AbstractNameDependentExtractor {
 					try {
 						Parameter parameter = this.findDeclaration(
 								constructor.getParameters(), suspect);
-						Node node = this.createAndConnectNode(nullCheck,
-								parameter);
-						Feature feature = this
-								.createAndConnectFeature(nullCheck);
-						this.createAndConnectNodeReason(feature, node);
-						this.createAndConnectFeatureReason(feature,
-								nameExtractorFeature);
-						return feature;
+						return this.addFeature(nullCheck)
+								.addNodeReason(parameter)
+								.addFeatureReason(nameExtractorFeature)
+								.getEntity();
 					} catch (DeclarationNotFoundException exception) {
 						// noop
 					}

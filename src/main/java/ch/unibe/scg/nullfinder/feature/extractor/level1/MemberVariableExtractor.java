@@ -5,7 +5,6 @@ import java.util.List;
 import ch.unibe.scg.nullfinder.feature.extractor.AbstractNameDependentExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
-import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NodeReason;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 import ch.unibe.scg.nullfinder.jpa.entity.Reason;
@@ -40,13 +39,9 @@ public class MemberVariableExtractor extends AbstractNameDependentExtractor {
 				try {
 					VariableDeclarator variableDeclarator = this
 							.findDeclaration(clazz.getMembers(), suspect);
-					Node node = this.createAndConnectNode(nullCheck,
-							variableDeclarator);
-					Feature feature = this.createAndConnectFeature(nullCheck);
-					this.createAndConnectNodeReason(feature, node);
-					this.createAndConnectFeatureReason(feature,
-							nameExtractorFeature);
-					return feature;
+					return this.addFeature(nullCheck)
+							.addNodeReason(variableDeclarator)
+							.addFeatureReason(nameExtractorFeature).getEntity();
 				} catch (DeclarationNotFoundException exception) {
 					// noop
 				}
@@ -58,14 +53,10 @@ public class MemberVariableExtractor extends AbstractNameDependentExtractor {
 								.findDeclaration(
 										objectCreation.getAnonymousClassBody(),
 										suspect);
-						Node node = this.createAndConnectNode(nullCheck,
-								variableDeclarator);
-						Feature feature = this
-								.createAndConnectFeature(nullCheck);
-						this.createAndConnectNodeReason(feature, node);
-						this.createAndConnectFeatureReason(feature,
-								nameExtractorFeature);
-						return feature;
+						return this.addFeature(nullCheck)
+								.addNodeReason(variableDeclarator)
+								.addFeatureReason(nameExtractorFeature)
+								.getEntity();
 					} catch (DeclarationNotFoundException exception) {
 						// noop
 					}
