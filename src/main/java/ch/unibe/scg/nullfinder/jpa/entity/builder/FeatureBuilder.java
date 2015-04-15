@@ -38,6 +38,13 @@ public class FeatureBuilder extends AbstractEntityBuilder<Feature> {
 		return this;
 	}
 
+	public FeatureBuilder addFeatureReasons(List<Feature> reasonFeatures) {
+		for (Feature reasonFeature : reasonFeatures) {
+			this.addFeatureReason(reasonFeature);
+		}
+		return this;
+	}
+
 	public FeatureBuilder addFeatureReason(Feature reasonFeature) {
 		this.entityConnector.createAndConnectFeatureReason(this.entity,
 				reasonFeature);

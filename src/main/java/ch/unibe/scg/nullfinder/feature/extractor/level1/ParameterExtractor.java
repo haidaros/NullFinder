@@ -2,19 +2,17 @@ package ch.unibe.scg.nullfinder.feature.extractor.level1;
 
 import java.util.List;
 
-import ch.unibe.scg.nullfinder.feature.extractor.AbstractNameDependentExtractor;
+import ch.unibe.scg.nullfinder.feature.extractor.AbstractVariableDependentExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
-import ch.unibe.scg.nullfinder.jpa.entity.NodeReason;
+import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
-import ch.unibe.scg.nullfinder.jpa.entity.Reason;
 
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.expr.NameExpr;
 
-public class ParameterExtractor extends AbstractNameDependentExtractor {
+public class ParameterExtractor extends AbstractVariableDependentExtractor {
 
 	public ParameterExtractor() {
 		super(1);
@@ -24,11 +22,10 @@ public class ParameterExtractor extends AbstractNameDependentExtractor {
 	protected Feature safeExtract(NullCheck nullCheck, List<Feature> features)
 			throws UnextractableException {
 		// TODO there is some dirty stuff going on here...
-		Feature nameExtractorFeature = this.extractNameExtractorFeature(
+		Feature variableExtractorFeature = this
+				.extractVariableExtractorFeature(nullCheck, features);
+		Node variableExtractorNode = this.extractVariableExtractorNode(
 				nullCheck, features);
-		Reason reason = nameExtractorFeature.getReasons().iterator().next();
-		NameExpr suspect = (NameExpr) ((NodeReason) reason).getNode()
-				.getJavaParserNode();
 		com.github.javaparser.ast.Node current = nullCheck.getNode()
 				.getJavaParserNode().getParentNode();
 		// haha, a null nullCheck!
@@ -39,10 +36,10 @@ public class ParameterExtractor extends AbstractNameDependentExtractor {
 				if (method.getParameters() != null) {
 					try {
 						Parameter parameter = this.findDeclaration(
-								method.getParameters(), suspect);
+								method.getParameters(), variableExtractorNode);
 						return this.addFeature(nullCheck)
 								.addNodeReason(parameter)
-								.addFeatureReason(nameExtractorFeature)
+								.addFeatureReason(variableExtractorFeature)
 								.getEntity();
 					} catch (DeclarationNotFoundException exception) {
 						// noop
@@ -54,10 +51,11 @@ public class ParameterExtractor extends AbstractNameDependentExtractor {
 				if (constructor.getParameters() != null) {
 					try {
 						Parameter parameter = this.findDeclaration(
-								constructor.getParameters(), suspect);
+								constructor.getParameters(),
+								variableExtractorNode);
 						return this.addFeature(nullCheck)
 								.addNodeReason(parameter)
-								.addFeatureReason(nameExtractorFeature)
+								.addFeatureReason(variableExtractorFeature)
 								.getEntity();
 					} catch (DeclarationNotFoundException exception) {
 						// noop
@@ -70,13 +68,14 @@ public class ParameterExtractor extends AbstractNameDependentExtractor {
 	}
 
 	protected Parameter findDeclaration(List<Parameter> parameters,
-			NameExpr suspect) throws DeclarationNotFoundException {
+			Node variableExtractorNode) throws DeclarationNotFoundException {
 		for (Parameter parameter : parameters) {
-			if (suspect.getName().equals(parameter.getId().getName())) {
+			if (this.getVariableName(variableExtractorNode).equals(
+					parameter.getId().getName())) {
 				return parameter;
 			}
 		}
-		throw new DeclarationNotFoundException(suspect);
+		throw new DeclarationNotFoundException(variableExtractorNode);
 	}
 
 }

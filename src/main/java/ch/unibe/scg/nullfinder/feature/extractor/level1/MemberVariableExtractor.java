@@ -2,21 +2,19 @@ package ch.unibe.scg.nullfinder.feature.extractor.level1;
 
 import java.util.List;
 
-import ch.unibe.scg.nullfinder.feature.extractor.AbstractNameDependentExtractor;
+import ch.unibe.scg.nullfinder.feature.extractor.AbstractVariableDependentExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
-import ch.unibe.scg.nullfinder.jpa.entity.NodeReason;
+import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
-import ch.unibe.scg.nullfinder.jpa.entity.Reason;
 
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 
-public class MemberVariableExtractor extends AbstractNameDependentExtractor {
+public class MemberVariableExtractor extends AbstractVariableDependentExtractor {
 
 	public MemberVariableExtractor() {
 		super(1);
@@ -26,11 +24,10 @@ public class MemberVariableExtractor extends AbstractNameDependentExtractor {
 	protected Feature safeExtract(NullCheck nullCheck, List<Feature> features)
 			throws UnextractableException {
 		// TODO there is some dirty stuff going on here...
-		Feature nameExtractorFeature = this.extractNameExtractorFeature(
+		Feature variableExtractorFeature = this
+				.extractVariableExtractorFeature(nullCheck, features);
+		Node variableExtractorNode = this.extractVariableExtractorNode(
 				nullCheck, features);
-		Reason reason = nameExtractorFeature.getReasons().iterator().next();
-		NameExpr suspect = (NameExpr) ((NodeReason) reason).getNode()
-				.getJavaParserNode();
 		com.github.javaparser.ast.Node current = nullCheck.getNode()
 				.getJavaParserNode().getParentNode();
 		while (current != null) {
@@ -38,10 +35,12 @@ public class MemberVariableExtractor extends AbstractNameDependentExtractor {
 				ClassOrInterfaceDeclaration clazz = (ClassOrInterfaceDeclaration) current;
 				try {
 					VariableDeclarator variableDeclarator = this
-							.findDeclaration(clazz.getMembers(), suspect);
+							.findDeclaration(clazz.getMembers(),
+									variableExtractorNode);
 					return this.addFeature(nullCheck)
 							.addNodeReason(variableDeclarator)
-							.addFeatureReason(nameExtractorFeature).getEntity();
+							.addFeatureReason(variableExtractorFeature)
+							.getEntity();
 				} catch (DeclarationNotFoundException exception) {
 					// noop
 				}
@@ -52,10 +51,10 @@ public class MemberVariableExtractor extends AbstractNameDependentExtractor {
 						VariableDeclarator variableDeclarator = this
 								.findDeclaration(
 										objectCreation.getAnonymousClassBody(),
-										suspect);
+										variableExtractorNode);
 						return this.addFeature(nullCheck)
 								.addNodeReason(variableDeclarator)
-								.addFeatureReason(nameExtractorFeature)
+								.addFeatureReason(variableExtractorFeature)
 								.getEntity();
 					} catch (DeclarationNotFoundException exception) {
 						// noop
@@ -68,18 +67,19 @@ public class MemberVariableExtractor extends AbstractNameDependentExtractor {
 	}
 
 	protected VariableDeclarator findDeclaration(List<BodyDeclaration> bodies,
-			NameExpr suspect) throws DeclarationNotFoundException {
+			Node variableExtractorNode) throws DeclarationNotFoundException {
 		for (BodyDeclaration body : bodies) {
 			if (body instanceof FieldDeclaration) {
 				FieldDeclaration field = (FieldDeclaration) body;
 				for (VariableDeclarator variable : field.getVariables()) {
-					if (suspect.getName().equals(variable.getId().getName())) {
+					if (this.getVariableName(variableExtractorNode).equals(
+							variable.getId().getName())) {
 						return variable;
 					}
 				}
 			}
 		}
-		throw new DeclarationNotFoundException(suspect);
+		throw new DeclarationNotFoundException(variableExtractorNode);
 	}
 
 }

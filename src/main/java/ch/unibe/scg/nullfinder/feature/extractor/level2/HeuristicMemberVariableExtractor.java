@@ -2,13 +2,13 @@ package ch.unibe.scg.nullfinder.feature.extractor.level2;
 
 import java.util.List;
 
-import ch.unibe.scg.nullfinder.feature.extractor.AbstractNameDependentExtractor;
+import ch.unibe.scg.nullfinder.feature.extractor.AbstractVariableDependentExtractor;
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 public class HeuristicMemberVariableExtractor extends
-		AbstractNameDependentExtractor {
+		AbstractVariableDependentExtractor {
 
 	public HeuristicMemberVariableExtractor() {
 		super(2);
@@ -17,10 +17,10 @@ public class HeuristicMemberVariableExtractor extends
 	@Override
 	protected Feature safeExtract(NullCheck nullCheck, List<Feature> features)
 			throws UnextractableException {
-		Feature nameExtractorFeature = this.extractNameExtractorFeature(
-				nullCheck, features);
+		Feature variableExtractorFeature = this
+				.extractVariableExtractorFeature(nullCheck, features);
 		return this.addFeature(nullCheck)
-				.addFeatureReason(nameExtractorFeature).getEntity();
+				.addFeatureReason(variableExtractorFeature).getEntity();
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class HeuristicMemberVariableExtractor extends
 	}
 
 	protected boolean isExtractedByDeclarationExtractor(Feature feature) {
-		return feature.getExtractor() instanceof AbstractNameDependentExtractor;
+		return feature.getExtractor() instanceof AbstractVariableDependentExtractor;
 	}
 
 }
