@@ -11,7 +11,7 @@ public class NameExtractor extends AbstractComparandExtractor {
 	}
 
 	@Override
-	protected Class<?> getComparand() {
+	protected Class<?> getComparandClass() {
 		return NameExpr.class;
 	}
 

@@ -11,7 +11,7 @@ public class MethodCallExtractor extends AbstractComparandExtractor {
 	}
 
 	@Override
-	protected Class<?> getComparand() {
+	protected Class<?> getComparandClass() {
 		return MethodCallExpr.class;
 	}
 

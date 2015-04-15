@@ -11,7 +11,7 @@ public class CastExtractor extends AbstractComparandExtractor {
 	}
 
 	@Override
-	protected Class<?> getComparand() {
+	protected Class<?> getComparandClass() {
 		return CastExpr.class;
 	}
 

@@ -11,7 +11,7 @@ public class FieldAccessExtractor extends AbstractComparandExtractor {
 	}
 
 	@Override
-	protected Class<?> getComparand() {
+	protected Class<?> getComparandClass() {
 		return FieldAccessExpr.class;
 	}
 

@@ -11,7 +11,7 @@ public class ArrayAccessExtractor extends AbstractComparandExtractor {
 	}
 
 	@Override
-	protected Class<?> getComparand() {
+	protected Class<?> getComparandClass() {
 		return ArrayAccessExpr.class;
 	}
 

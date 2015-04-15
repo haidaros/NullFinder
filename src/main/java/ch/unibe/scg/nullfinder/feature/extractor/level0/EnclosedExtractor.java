@@ -11,7 +11,7 @@ public class EnclosedExtractor extends AbstractComparandExtractor {
 	}
 
 	@Override
-	protected Class<?> getComparand() {
+	protected Class<?> getComparandClass() {
 		return EnclosedExpr.class;
 	}
 

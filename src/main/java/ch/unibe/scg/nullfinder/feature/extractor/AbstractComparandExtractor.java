@@ -7,6 +7,7 @@ import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.Expression;
 
 public abstract class AbstractComparandExtractor extends AbstractExtractor {
 
@@ -20,21 +21,26 @@ public abstract class AbstractComparandExtractor extends AbstractExtractor {
 		assert nullCheck.getNode().getJavaParserNode().getParentNode() instanceof BinaryExpr;
 		BinaryExpr binary = (BinaryExpr) nullCheck.getNode()
 				.getJavaParserNode().getParentNode();
-		Class<?> comparand = this.getComparand();
-		if (comparand.isInstance(binary.getLeft())) {
-			Node node = this.createAndConnectNode(nullCheck, binary.getLeft());
-			Feature feature = this.createAndConnectFeature(nullCheck);
-			this.createAndConnectNodeReason(feature, node);
-			return feature;
+		Class<?> comparandClass = this.getComparandClass();
+		if (comparandClass.isInstance(binary.getLeft())) {
+			return this.getCreatedAndConnectedFeature(nullCheck,
+					binary.getLeft());
 		}
-		if (comparand.isInstance(binary.getRight())) {
-			Node node = this.createAndConnectNode(nullCheck, binary.getRight());
-			Feature feature = this.createAndConnectFeature(nullCheck);
-			this.createAndConnectNodeReason(feature, node);
+		if (comparandClass.isInstance(binary.getRight())) {
+			return this.getCreatedAndConnectedFeature(nullCheck,
+					binary.getRight());
 		}
 		throw new UnextractableException(nullCheck);
 	}
 
-	abstract protected Class<?> getComparand();
+	protected Feature getCreatedAndConnectedFeature(NullCheck nullCheck,
+			Expression expression) {
+		Node node = this.createAndConnectNode(nullCheck, expression);
+		Feature feature = this.createAndConnectFeature(nullCheck);
+		this.createAndConnectNodeReason(feature, node);
+		return feature;
+	}
+
+	abstract protected Class<?> getComparandClass();
 
 }
