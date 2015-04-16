@@ -26,8 +26,9 @@ public class JavaSourceProcessor implements
 					javaParserCompilationUnit, javaSourcePath);
 			javaParserCompilationUnit.setData(compilationUnit);
 			return compilationUnit;
-		} catch (ParseException | TokenMgrError throwable) {
-			throw new UnparsableException(throwable);
+		} catch (ParseException | TokenMgrError | NullPointerException throwable) {
+			// null pointer can happen during parsing...
+			throw new UnparsableException(javaSourcePath, throwable);
 		}
 	}
 

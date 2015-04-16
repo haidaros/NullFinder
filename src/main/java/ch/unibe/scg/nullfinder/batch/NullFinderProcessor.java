@@ -24,7 +24,7 @@ public class NullFinderProcessor implements
 
 	@Override
 	public CompilationUnit process(Path javaSourcePath)
-			throws UnparsableException, IOException {
+			throws UnparsableException, IOException, UnvisitableException {
 		CompilationUnit compilationUnit = this.javaSourceProcessor
 				.process(javaSourcePath);
 		List<NullCheck> nullChecks = this.compilationUnitProcessor

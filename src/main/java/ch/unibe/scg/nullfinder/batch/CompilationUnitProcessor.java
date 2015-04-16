@@ -48,11 +48,17 @@ public class CompilationUnitProcessor implements
 	}
 
 	@Override
-	public List<NullCheck> process(CompilationUnit compilationUnit) {
-		NullLiteralVisitor visitor = new NullLiteralVisitor();
-		visitor.visit(compilationUnit.getJavaParserCompilationUnit(),
-				compilationUnit);
-		return visitor.getNullChecks();
+	public List<NullCheck> process(CompilationUnit compilationUnit)
+			throws UnvisitableException {
+		try {
+			NullLiteralVisitor visitor = new NullLiteralVisitor();
+			visitor.visit(compilationUnit.getJavaParserCompilationUnit(),
+					compilationUnit);
+			return visitor.getNullChecks();
+		} catch (NullPointerException exception) {
+			// sometimes this happens in the visitor
+			throw new UnvisitableException(compilationUnit, exception);
+		}
 	}
 
 }
