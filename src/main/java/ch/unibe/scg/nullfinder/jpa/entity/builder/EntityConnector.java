@@ -22,8 +22,8 @@ public class EntityConnector {
 	}
 
 	public Feature createAndConnectFeature(NullCheck nullCheck,
-			IExtractor extractor) {
-		Feature feature = new Feature(nullCheck, extractor);
+			IExtractor extractor, String manifestation) {
+		Feature feature = new Feature(nullCheck, extractor, manifestation);
 		nullCheck.getFeatures().add(feature);
 		return feature;
 	}

@@ -14,7 +14,6 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 import ch.unibe.scg.nullfinder.feature.extractor.IExtractor;
-import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
@@ -50,12 +49,7 @@ public class NullCheckProcessor implements
 		List<Feature> features = new ArrayList<>();
 		for (Set<IExtractor> levelExtractors : this.extractors.values()) {
 			for (IExtractor extractor : levelExtractors) {
-				try {
-					features.add(extractor.extract(nullCheck, features));
-				} catch (UnextractableException e) {
-					// don't care, null checks without any features can be
-					// detected later
-				}
+				features.addAll(extractor.extract(nullCheck, features));
 			}
 		}
 		return features;

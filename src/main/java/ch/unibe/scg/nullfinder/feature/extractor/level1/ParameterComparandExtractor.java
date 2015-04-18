@@ -1,9 +1,9 @@
 package ch.unibe.scg.nullfinder.feature.extractor.level1;
 
+import java.util.Collections;
 import java.util.List;
 
-import ch.unibe.scg.nullfinder.feature.extractor.AbstractVariableDependentExtractor;
-import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
+import ch.unibe.scg.nullfinder.feature.extractor.AbstractVariableComparandDependentExtractor;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
@@ -12,20 +12,20 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 
-public class ParameterExtractor extends AbstractVariableDependentExtractor {
+public class ParameterComparandExtractor extends
+		AbstractVariableComparandDependentExtractor {
 
-	public ParameterExtractor() {
+	public ParameterComparandExtractor() {
 		super(1);
 	}
 
 	@Override
-	protected Feature safeExtract(NullCheck nullCheck, List<Feature> features)
-			throws UnextractableException {
+	protected List<Feature> safeExtract(NullCheck nullCheck,
+			List<Feature> features) {
 		// TODO there is some dirty stuff going on here...
-		Feature variableExtractorFeature = this
-				.extractVariableExtractorFeature(nullCheck, features);
-		Node variableExtractorNode = this.extractVariableExtractorNode(
-				nullCheck, features);
+		Feature variableFeature = this.extractVariableFeature(nullCheck,
+				features);
+		Node variableNode = this.extractVariableNode(nullCheck, features);
 		com.github.javaparser.ast.Node current = nullCheck.getNode()
 				.getJavaParserNode().getParentNode();
 		// haha, a null nullCheck!
@@ -36,11 +36,12 @@ public class ParameterExtractor extends AbstractVariableDependentExtractor {
 				if (method.getParameters() != null) {
 					try {
 						Parameter parameter = this.findDeclaration(
-								method.getParameters(), variableExtractorNode);
-						return this.addFeature(nullCheck)
+								method.getParameters(), variableNode);
+						return this.getFeatures(this
+								.getFeatureBuilder(nullCheck,
+										MethodDeclaration.class.getName())
 								.addNodeReason(parameter)
-								.addFeatureReason(variableExtractorFeature)
-								.getEntity();
+								.addFeatureReason(variableFeature).getEntity());
 					} catch (DeclarationNotFoundException exception) {
 						// noop
 					}
@@ -51,12 +52,12 @@ public class ParameterExtractor extends AbstractVariableDependentExtractor {
 				if (constructor.getParameters() != null) {
 					try {
 						Parameter parameter = this.findDeclaration(
-								constructor.getParameters(),
-								variableExtractorNode);
-						return this.addFeature(nullCheck)
+								constructor.getParameters(), variableNode);
+						return this.getFeatures(this
+								.getFeatureBuilder(nullCheck,
+										ConstructorDeclaration.class.getName())
 								.addNodeReason(parameter)
-								.addFeatureReason(variableExtractorFeature)
-								.getEntity();
+								.addFeatureReason(variableFeature).getEntity());
 					} catch (DeclarationNotFoundException exception) {
 						// noop
 					}
@@ -64,7 +65,7 @@ public class ParameterExtractor extends AbstractVariableDependentExtractor {
 			}
 			current = current.getParentNode();
 		}
-		throw new UnextractableException(nullCheck);
+		return Collections.emptyList();
 	}
 
 	protected Parameter findDeclaration(List<Parameter> parameters,

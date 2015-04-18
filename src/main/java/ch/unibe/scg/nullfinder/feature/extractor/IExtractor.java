@@ -11,7 +11,6 @@ public interface IExtractor {
 
 	void setLevel(int level);
 
-	Feature extract(NullCheck nullCheck, List<Feature> features)
-			throws UnextractableException;
+	List<Feature> extract(NullCheck nullCheck, List<Feature> features);
 
 }

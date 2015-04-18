@@ -1,10 +1,10 @@
 package ch.unibe.scg.nullfinder.feature.extractor.level1;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import ch.unibe.scg.nullfinder.feature.extractor.AbstractVariableDependentExtractor;
-import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
+import ch.unibe.scg.nullfinder.feature.extractor.AbstractVariableComparandDependentExtractor;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
@@ -15,20 +15,20 @@ import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 
-public class LocalVariableExtractor extends AbstractVariableDependentExtractor {
+public class LocalVariableComparandExtractor extends
+		AbstractVariableComparandDependentExtractor {
 
-	public LocalVariableExtractor() {
+	public LocalVariableComparandExtractor() {
 		super(1);
 	}
 
 	@Override
-	protected Feature safeExtract(NullCheck nullCheck, List<Feature> features)
-			throws UnextractableException {
+	protected List<Feature> safeExtract(NullCheck nullCheck,
+			List<Feature> features) {
 		// TODO there is some dirty stuff going on here...
-		Feature variableExtractorFeature = this
-				.extractVariableExtractorFeature(nullCheck, features);
-		Node variableExtractorNode = this.extractVariableExtractorNode(
-				nullCheck, features);
+		Feature variableFeature = this.extractVariableFeature(nullCheck,
+				features);
+		Node variableNode = this.extractVariableNode(nullCheck, features);
 		com.github.javaparser.ast.Node current = nullCheck.getNode()
 				.getJavaParserNode().getParentNode();
 		com.github.javaparser.ast.Node stop = nullCheck.getNode()
@@ -61,11 +61,16 @@ public class LocalVariableExtractor extends AbstractVariableDependentExtractor {
 						VariableDeclarator variableDeclarator = this
 								.findDeclaration(
 										(VariableDeclarationExpr) child,
-										variableExtractorNode);
-						return this.addFeature(nullCheck)
-								.addNodeReason(variableDeclarator)
-								.addFeatureReason(variableExtractorFeature)
-								.getEntity();
+										variableNode);
+						return this
+								.getFeatures(this
+										.getFeatureBuilder(
+												nullCheck,
+												VariableDeclarationExpr.class
+														.getName())
+										.addNodeReason(variableDeclarator)
+										.addFeatureReason(variableFeature)
+										.getEntity());
 					} catch (DeclarationNotFoundException exception) {
 						// noop
 					}
@@ -77,11 +82,13 @@ public class LocalVariableExtractor extends AbstractVariableDependentExtractor {
 							VariableDeclarator variableDeclarator = this
 									.findDeclaration(
 											(VariableDeclarationExpr) expression,
-											variableExtractorNode);
-							return this.addFeature(nullCheck)
+											variableNode);
+							return this.getFeatures(this
+									.getFeatureBuilder(nullCheck,
+											ExpressionStmt.class.getName())
 									.addNodeReason(variableDeclarator)
-									.addFeatureReason(variableExtractorFeature)
-									.getEntity();
+									.addFeatureReason(variableFeature)
+									.getEntity());
 						} catch (DeclarationNotFoundException exception) {
 							// noop
 						}
@@ -91,7 +98,7 @@ public class LocalVariableExtractor extends AbstractVariableDependentExtractor {
 			stop = current;
 			current = current.getParentNode();
 		}
-		throw new UnextractableException(nullCheck);
+		return Collections.emptyList();
 	}
 
 	protected VariableDeclarator findDeclaration(

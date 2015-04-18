@@ -1,9 +1,9 @@
 package ch.unibe.scg.nullfinder.feature.extractor.level1;
 
+import java.util.Collections;
 import java.util.List;
 
-import ch.unibe.scg.nullfinder.feature.extractor.AbstractVariableDependentExtractor;
-import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
+import ch.unibe.scg.nullfinder.feature.extractor.AbstractVariableComparandDependentExtractor;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
@@ -14,20 +14,20 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 
-public class MemberVariableExtractor extends AbstractVariableDependentExtractor {
+public class MemberVariableComparandExtractor extends
+		AbstractVariableComparandDependentExtractor {
 
-	public MemberVariableExtractor() {
+	public MemberVariableComparandExtractor() {
 		super(1);
 	}
 
 	@Override
-	protected Feature safeExtract(NullCheck nullCheck, List<Feature> features)
-			throws UnextractableException {
+	protected List<Feature> safeExtract(NullCheck nullCheck,
+			List<Feature> features) {
 		// TODO there is some dirty stuff going on here...
-		Feature variableExtractorFeature = this
-				.extractVariableExtractorFeature(nullCheck, features);
-		Node variableExtractorNode = this.extractVariableExtractorNode(
-				nullCheck, features);
+		Feature variableFeature = this.extractVariableFeature(nullCheck,
+				features);
+		Node variableNode = this.extractVariableNode(nullCheck, features);
 		com.github.javaparser.ast.Node current = nullCheck.getNode()
 				.getJavaParserNode().getParentNode();
 		while (current != null) {
@@ -35,12 +35,16 @@ public class MemberVariableExtractor extends AbstractVariableDependentExtractor 
 				ClassOrInterfaceDeclaration clazz = (ClassOrInterfaceDeclaration) current;
 				try {
 					VariableDeclarator variableDeclarator = this
-							.findDeclaration(clazz.getMembers(),
-									variableExtractorNode);
-					return this.addFeature(nullCheck)
-							.addNodeReason(variableDeclarator)
-							.addFeatureReason(variableExtractorFeature)
-							.getEntity();
+							.findDeclaration(clazz.getMembers(), variableNode);
+					return this
+							.getFeatures(this
+									.getFeatureBuilder(
+											nullCheck,
+											ClassOrInterfaceDeclaration.class
+													.getName())
+									.addNodeReason(variableDeclarator)
+									.addFeatureReason(variableFeature)
+									.getEntity());
 				} catch (DeclarationNotFoundException exception) {
 					// noop
 				}
@@ -51,11 +55,12 @@ public class MemberVariableExtractor extends AbstractVariableDependentExtractor 
 						VariableDeclarator variableDeclarator = this
 								.findDeclaration(
 										objectCreation.getAnonymousClassBody(),
-										variableExtractorNode);
-						return this.addFeature(nullCheck)
+										variableNode);
+						return this.getFeatures(this
+								.getFeatureBuilder(nullCheck,
+										ObjectCreationExpr.class.getName())
 								.addNodeReason(variableDeclarator)
-								.addFeatureReason(variableExtractorFeature)
-								.getEntity();
+								.addFeatureReason(variableFeature).getEntity());
 					} catch (DeclarationNotFoundException exception) {
 						// noop
 					}
@@ -63,7 +68,7 @@ public class MemberVariableExtractor extends AbstractVariableDependentExtractor 
 			}
 			current = current.getParentNode();
 		}
-		throw new UnextractableException(nullCheck);
+		return Collections.emptyList();
 	}
 
 	protected VariableDeclarator findDeclaration(List<BodyDeclaration> bodies,

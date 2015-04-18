@@ -1,5 +1,9 @@
 package ch.unibe.scg.nullfinder.feature.extractor;
 
+import java.util.Arrays;
+import java.util.List;
+
+import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 import ch.unibe.scg.nullfinder.jpa.entity.builder.FeatureBuilder;
 import ch.unibe.scg.nullfinder.jpa.entity.builder.NullCheckBuilder;
@@ -22,8 +26,15 @@ public abstract class AbstractExtractor implements IExtractor {
 		this.level = level;
 	}
 
-	protected FeatureBuilder addFeature(NullCheck nullCheck) {
-		return (new NullCheckBuilder(nullCheck)).addFeature(this);
+	protected FeatureBuilder getFeatureBuilder(NullCheck nullCheck,
+			String manifestation) {
+		return (new NullCheckBuilder(nullCheck))
+				.addFeature(this, manifestation);
+	}
+
+	protected List<Feature> getFeatures(Feature... features) {
+		return Arrays.asList(features);
+
 	}
 
 }

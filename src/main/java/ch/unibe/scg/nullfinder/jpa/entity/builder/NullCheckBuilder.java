@@ -17,9 +17,9 @@ public class NullCheckBuilder extends AbstractEntityBuilder<NullCheck> {
 		this(EntityConnector.INSTANCE, nullCheck);
 	}
 
-	public FeatureBuilder addFeature(IExtractor extractor) {
+	public FeatureBuilder addFeature(IExtractor extractor, String manifestation) {
 		Feature feature = this.entityConnector.createAndConnectFeature(
-				this.entity, extractor);
+				this.entity, extractor, manifestation);
 		return new FeatureBuilder(this.entityConnector, feature);
 	}
 

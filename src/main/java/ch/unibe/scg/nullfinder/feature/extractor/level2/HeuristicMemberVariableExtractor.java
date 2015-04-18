@@ -2,25 +2,25 @@ package ch.unibe.scg.nullfinder.feature.extractor.level2;
 
 import java.util.List;
 
-import ch.unibe.scg.nullfinder.feature.extractor.AbstractVariableDependentExtractor;
-import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
+import ch.unibe.scg.nullfinder.feature.extractor.AbstractVariableComparandDependentExtractor;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 public class HeuristicMemberVariableExtractor extends
-		AbstractVariableDependentExtractor {
+		AbstractVariableComparandDependentExtractor {
 
 	public HeuristicMemberVariableExtractor() {
 		super(2);
 	}
 
 	@Override
-	protected Feature safeExtract(NullCheck nullCheck, List<Feature> features)
-			throws UnextractableException {
-		Feature variableExtractorFeature = this
-				.extractVariableExtractorFeature(nullCheck, features);
-		return this.addFeature(nullCheck)
-				.addFeatureReason(variableExtractorFeature).getEntity();
+	protected List<Feature> safeExtract(NullCheck nullCheck,
+			List<Feature> features) {
+		Feature variableFeature = this.extractVariableFeature(nullCheck,
+				features);
+		// TODO is there a useful non-empty manifestation?
+		return this.getFeatures(this.getFeatureBuilder(nullCheck, "")
+				.addFeatureReason(variableFeature).getEntity());
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class HeuristicMemberVariableExtractor extends
 	}
 
 	protected boolean isExtractedByDeclarationExtractor(Feature feature) {
-		return feature.getExtractor() instanceof AbstractVariableDependentExtractor;
+		return feature.getExtractor() instanceof AbstractVariableComparandDependentExtractor;
 	}
 
 }

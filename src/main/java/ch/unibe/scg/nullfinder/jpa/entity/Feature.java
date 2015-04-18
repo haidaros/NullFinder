@@ -12,8 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
@@ -21,8 +19,6 @@ import org.hibernate.annotations.Type;
 import ch.unibe.scg.nullfinder.feature.extractor.IExtractor;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "nullCheckId",
-		"className", "level" }))
 public class Feature {
 
 	@Id
@@ -35,16 +31,21 @@ public class Feature {
 	protected List<Reason> reasons;
 	@OneToMany(mappedBy = "reasonFeature")
 	protected List<FeatureReason> featureReasons;
-	@Columns(columns = { @Column(name = "className", nullable = false),
-			@Column(name = "level", nullable = false) })
+	@Columns(columns = {
+			@Column(name = "extractorClassName", nullable = false),
+			@Column(name = "extractorLevel", nullable = false) })
 	@Type(type = "ch.unibe.scg.nullfinder.jpa.type.ExtractorType")
 	protected IExtractor extractor;
+	@Column(name = "manifestation", nullable = false)
+	protected String manifestation;
 
-	public Feature(NullCheck nullCheck, IExtractor extractor) {
+	public Feature(NullCheck nullCheck, IExtractor extractor,
+			String manifestation) {
 		this.nullCheck = nullCheck;
 		this.reasons = new ArrayList<>();
 		this.featureReasons = new ArrayList<>();
 		this.extractor = extractor;
+		this.manifestation = manifestation;
 	}
 
 	/**
@@ -84,6 +85,14 @@ public class Feature {
 
 	public void setFeatureReasons(List<FeatureReason> featureReasons) {
 		this.featureReasons = featureReasons;
+	}
+
+	public String getManifestation() {
+		return this.manifestation;
+	}
+
+	public void setManifestation(String manifestation) {
+		this.manifestation = manifestation;
 	}
 
 }
