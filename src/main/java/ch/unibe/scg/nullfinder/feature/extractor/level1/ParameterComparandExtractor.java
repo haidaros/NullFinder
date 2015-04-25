@@ -1,5 +1,6 @@
 package ch.unibe.scg.nullfinder.feature.extractor.level1;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,6 +13,13 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 
+/**
+ * Tries to find the declaration of a parameter with the name of the variable
+ * null is compared against.
+ *
+ * @see ParameterComparandExtractor#extract(NullCheck) For a description of the
+ *      used strategy and its short-comings.
+ */
 public class ParameterComparandExtractor extends
 		AbstractVariableComparandDependentExtractor {
 
@@ -19,6 +27,15 @@ public class ParameterComparandExtractor extends
 		super(1);
 	}
 
+	/**
+	 * Searches for a parameter declaration for the variable null is compared
+	 * against in the code above the comparison. The tree is traversed upwards
+	 * until the current body is left.
+	 *
+	 * <NOTE>This will only match true positives, but in the case of nested
+	 * bodies - e.g. inner classes or anonymous classes - it may produce false
+	 * negatives.</NOTE>
+	 */
 	@Override
 	protected List<Feature> safeExtract(NullCheck nullCheck) {
 		// TODO there is some dirty stuff going on here...
@@ -35,7 +52,7 @@ public class ParameterComparandExtractor extends
 					try {
 						Parameter parameter = this.findDeclaration(
 								method.getParameters(), variableNode);
-						return this.getFeatures(this
+						return Arrays.asList(this
 								.getFeatureBuilder(nullCheck,
 										MethodDeclaration.class.getName())
 								.addNodeReason(parameter)
@@ -51,7 +68,7 @@ public class ParameterComparandExtractor extends
 					try {
 						Parameter parameter = this.findDeclaration(
 								constructor.getParameters(), variableNode);
-						return this.getFeatures(this
+						return Arrays.asList(this
 								.getFeatureBuilder(nullCheck,
 										ConstructorDeclaration.class.getName())
 								.addNodeReason(parameter)

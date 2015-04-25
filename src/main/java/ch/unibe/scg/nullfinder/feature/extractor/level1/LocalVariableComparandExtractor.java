@@ -1,6 +1,7 @@
 package ch.unibe.scg.nullfinder.feature.extractor.level1;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,7 +18,11 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 
 /**
- * Tries to find a declaration
+ * Tries to find the declaration of a local variable with the name of the
+ * variable null is compared against.
+ *
+ * @see LocalVariableComparandExtractor#extract(NullCheck) For a description of
+ *      the used strategy and its short-comings.
  */
 public class LocalVariableComparandExtractor extends
 		AbstractVariableComparandDependentExtractor {
@@ -26,6 +31,15 @@ public class LocalVariableComparandExtractor extends
 		super(1);
 	}
 
+	/**
+	 * Searches for a declaration statement for the variable null is compared
+	 * against in the code above the comparison. The tree is traversed upwards
+	 * until the current body is left.
+	 *
+	 * <NOTE>This will only match true positives, but in the case of nested
+	 * bodies - e.g. inner classes or anonymous classes - it may produce false
+	 * negatives</NOTE>
+	 */
 	@Override
 	protected List<Feature> safeExtract(NullCheck nullCheck) {
 		// TODO there is some dirty stuff going on here...
@@ -64,8 +78,8 @@ public class LocalVariableComparandExtractor extends
 								.findDeclaration(
 										(VariableDeclarationExpr) child,
 										variableNode);
-						return this
-								.getFeatures(this
+						return Arrays
+								.asList(this
 										.getFeatureBuilder(
 												nullCheck,
 												VariableDeclarationExpr.class
@@ -85,7 +99,7 @@ public class LocalVariableComparandExtractor extends
 									.findDeclaration(
 											(VariableDeclarationExpr) expression,
 											variableNode);
-							return this.getFeatures(this
+							return Arrays.asList(this
 									.getFeatureBuilder(nullCheck,
 											ExpressionStmt.class.getName())
 									.addNodeReason(variableDeclarator)
@@ -106,6 +120,17 @@ public class LocalVariableComparandExtractor extends
 		return Collections.emptyList();
 	}
 
+	/**
+	 * Finds the declaration of the variable described by the specified node.
+	 *
+	 * @param declaration
+	 *            The declaration to search
+	 * @param variableExtractorNode
+	 *            The variable described to find
+	 * @return The variable declarator
+	 * @throws DeclarationNotFoundException
+	 *             Thrown if no declaration could be found
+	 */
 	protected VariableDeclarator findDeclaration(
 			VariableDeclarationExpr declaration, Node variableExtractorNode)
 			throws DeclarationNotFoundException {

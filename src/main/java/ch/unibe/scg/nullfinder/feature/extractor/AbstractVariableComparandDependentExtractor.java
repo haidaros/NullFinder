@@ -13,6 +13,9 @@ import com.github.javaparser.ast.expr.ArrayAccessExpr;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 
+/**
+ * Depends on null checks against variables.
+ */
 public abstract class AbstractVariableComparandDependentExtractor extends
 		AbstractDependentExtractor {
 
@@ -20,13 +23,32 @@ public abstract class AbstractVariableComparandDependentExtractor extends
 		super(level);
 	}
 
+	/**
+	 * Extracts the feature that represents that null is compared against a
+	 * variable. The null check must meet the dependencies.
+	 *
+	 * @param nullCheck
+	 *            The null check to examine
+	 * @return The feature
+	 *
+	 * @see AbstractVariableComparandDependentExtractor#meetsDependencies(NullCheck)
+	 */
 	protected Feature extractVariableFeature(NullCheck nullCheck) {
 		assert this.meetsDependencies(nullCheck);
 		return nullCheck.getFeatures().stream()
-				.filter(this::isExtractedByVariableComparandExtractor)
-				.findFirst().get();
+				.filter(this::isVariableComparison).findFirst().get();
 	}
 
+	/**
+	 * Extracts the node that represents the variable null is compared against.
+	 * The null check must meet the dependencies.
+	 *
+	 * @param nullCheck
+	 *            The null check to examine
+	 * @return The node
+	 *
+	 * @see AbstractVariableComparandDependentExtractor#meetsDependencies(NullCheck)
+	 */
 	protected Node extractVariableNode(NullCheck nullCheck) {
 		assert this.meetsDependencies(nullCheck);
 		List<Node> variableNodes = this.extractVariableFeature(nullCheck)
@@ -39,6 +61,13 @@ public abstract class AbstractVariableComparandDependentExtractor extends
 		return variableNodes.get(0);
 	}
 
+	/**
+	 * Gets the name of the variable represented by the specified node.
+	 *
+	 * @param node
+	 *            Must be one of NameExpr, FieldAccessExpr or ArrayAccessExpr
+	 * @return The variable name
+	 */
 	protected String getVariableName(Node node) {
 		assert node.getJavaParserNode() instanceof NameExpr
 				|| node.getJavaParserNode() instanceof FieldAccessExpr
@@ -46,7 +75,16 @@ public abstract class AbstractVariableComparandDependentExtractor extends
 		return node.getJavaParserNode().toString();
 	}
 
-	protected boolean isExtractedByVariableComparandExtractor(Feature feature) {
+	/**
+	 * Checks if the specified feature describes a comparison against a
+	 * variable. This means it was extracted by a comparand extractor and the
+	 * manifestation is one of NameExpr, FieldAccessExpr or ArrayAccessExpr
+	 *
+	 * @param feature
+	 *            The feature to examine
+	 * @return true if it does, false otherwise
+	 */
+	protected boolean isVariableComparison(Feature feature) {
 		return feature.getExtractor() instanceof ComparandExtractor
 				&& (feature.getManifestation().equals(NameExpr.class.getName())
 						|| feature.getManifestation().equals(
@@ -55,10 +93,14 @@ public abstract class AbstractVariableComparandDependentExtractor extends
 								ArrayAccessExpr.class.getName()));
 	}
 
+	/**
+	 * Meets the dependencies if exactly one feature is a comparison against a
+	 * variable.
+	 */
 	@Override
 	protected boolean meetsDependencies(NullCheck nullCheck) {
 		return nullCheck.getFeatures().stream()
-				.filter(this::isExtractedByVariableComparandExtractor).count() == 1;
+				.filter(this::isVariableComparison).count() == 1;
 	}
 
 }

@@ -1,5 +1,6 @@
 package ch.unibe.scg.nullfinder.feature.extractor.level0;
 
+import java.util.Arrays;
 import java.util.List;
 
 import ch.unibe.scg.nullfinder.feature.extractor.AbstractExtractor;
@@ -17,6 +18,10 @@ public class ComparandExtractor extends AbstractExtractor {
 		super(0);
 	}
 
+	/**
+	 * Stores the type of the node null is compared against as the feature's
+	 * manifestation.
+	 */
 	@Override
 	public List<Feature> extract(NullCheck nullCheck) {
 		assert nullCheck.getNode().getJavaParserNode().getParentNode() instanceof BinaryExpr;
@@ -25,7 +30,7 @@ public class ComparandExtractor extends AbstractExtractor {
 		com.github.javaparser.ast.Node comparand = (binary.getLeft() == nullCheck
 				.getNode().getJavaParserNode()) ? binary.getRight() : binary
 				.getLeft();
-		return this.getFeatures(this
+		return Arrays.asList(this
 				.getFeatureBuilder(nullCheck, comparand.getClass().getName())
 				.addNodeReason(comparand).getEntity());
 
