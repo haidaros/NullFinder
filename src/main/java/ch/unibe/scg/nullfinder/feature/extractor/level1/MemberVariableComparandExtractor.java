@@ -9,8 +9,8 @@ import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 import com.github.javaparser.ast.body.BodyDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 
@@ -22,32 +22,27 @@ public class MemberVariableComparandExtractor extends
 	}
 
 	@Override
-	protected List<Feature> safeExtract(NullCheck nullCheck,
-			List<Feature> features) {
+	protected List<Feature> safeExtract(NullCheck nullCheck) {
 		// TODO there is some dirty stuff going on here...
-		Feature variableFeature = this.extractVariableFeature(nullCheck,
-				features);
-		Node variableNode = this.extractVariableNode(nullCheck, features);
+		Feature variableFeature = this.extractVariableFeature(nullCheck);
+		Node variableNode = this.extractVariableNode(nullCheck);
 		com.github.javaparser.ast.Node current = nullCheck.getNode()
 				.getJavaParserNode().getParentNode();
 		while (current != null) {
-			if (current instanceof ClassOrInterfaceDeclaration) {
-				ClassOrInterfaceDeclaration clazz = (ClassOrInterfaceDeclaration) current;
+			if (current instanceof TypeDeclaration) {
+				TypeDeclaration type = (TypeDeclaration) current;
 				try {
 					VariableDeclarator variableDeclarator = this
-							.findDeclaration(clazz.getMembers(), variableNode);
-					return this
-							.getFeatures(this
-									.getFeatureBuilder(
-											nullCheck,
-											ClassOrInterfaceDeclaration.class
-													.getName())
-									.addNodeReason(variableDeclarator)
-									.addFeatureReason(variableFeature)
-									.getEntity());
+							.findDeclaration(type.getMembers(), variableNode);
+					return this.getFeatures(this
+							.getFeatureBuilder(nullCheck,
+									current.getClass().getName())
+							.addNodeReason(variableDeclarator)
+							.addFeatureReason(variableFeature).getEntity());
 				} catch (DeclarationNotFoundException exception) {
 					// noop
 				}
+				break;
 			} else if (current instanceof ObjectCreationExpr) {
 				ObjectCreationExpr objectCreation = (ObjectCreationExpr) current;
 				if (objectCreation.getAnonymousClassBody() != null) {
@@ -58,13 +53,14 @@ public class MemberVariableComparandExtractor extends
 										variableNode);
 						return this.getFeatures(this
 								.getFeatureBuilder(nullCheck,
-										ObjectCreationExpr.class.getName())
+										current.getClass().getName())
 								.addNodeReason(variableDeclarator)
 								.addFeatureReason(variableFeature).getEntity());
 					} catch (DeclarationNotFoundException exception) {
 						// noop
 					}
 				}
+				break;
 			}
 			current = current.getParentNode();
 		}

@@ -45,7 +45,7 @@ public class PathType extends AbstractSingleColumnStandardBasicType<Path>
 	@Override
 	public String objectToSQLString(Path value, Dialect dialect)
 			throws Exception {
-		return "\'" + value.toString() + "\'";
+		return "\'" + this.toString(value) + "\'";
 	}
 
 }

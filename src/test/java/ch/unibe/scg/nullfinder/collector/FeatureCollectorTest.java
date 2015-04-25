@@ -10,13 +10,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.unibe.scg.nullfinder.feature.extractor.UnextractableException;
-import ch.unibe.scg.nullfinder.feature.extractor.level0.ArrayAccessExtractor;
-import ch.unibe.scg.nullfinder.feature.extractor.level0.CastExtractor;
-import ch.unibe.scg.nullfinder.feature.extractor.level0.EnclosedExtractor;
-import ch.unibe.scg.nullfinder.feature.extractor.level0.FieldAccessExtractor;
-import ch.unibe.scg.nullfinder.feature.extractor.level0.MethodCallExtractor;
-import ch.unibe.scg.nullfinder.feature.extractor.level0.NameExtractor;
-import ch.unibe.scg.nullfinder.feature.extractor.level1.LocalVariableExtractor;
+import ch.unibe.scg.nullfinder.feature.extractor.level0.ArrayAccessComparandExtractor;
+import ch.unibe.scg.nullfinder.feature.extractor.level0.CastComparandExtractor;
+import ch.unibe.scg.nullfinder.feature.extractor.level0.EnclosedComparandExtractor;
+import ch.unibe.scg.nullfinder.feature.extractor.level0.FieldAccessComparandExtractor;
+import ch.unibe.scg.nullfinder.feature.extractor.level0.MethodCallComparandExtractor;
+import ch.unibe.scg.nullfinder.feature.extractor.level0.NameComparandExtractor;
+import ch.unibe.scg.nullfinder.feature.extractor.level1.LocalVariableComparandExtractor;
 import ch.unibe.scg.nullfinder.jpa.entity.CompilationUnit;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
@@ -50,7 +50,7 @@ public class FeatureCollectorTest {
 		NullCheck nullCheck = match.get();
 		List<Feature> features = this.featureCollector.collect(nullCheck);
 		Assert.assertEquals(features.size(), 1);
-		Assert.assertTrue(features.iterator().next().getExtractor() instanceof FieldAccessExtractor);
+		Assert.assertTrue(features.iterator().next().getExtractor() instanceof FieldAccessComparandExtractor);
 	}
 
 	@Test
@@ -64,7 +64,7 @@ public class FeatureCollectorTest {
 		NullCheck nullCheck = match.get();
 		List<Feature> features = this.featureCollector.collect(nullCheck);
 		Assert.assertEquals(features.size(), 1);
-		Assert.assertTrue(features.iterator().next().getExtractor() instanceof ArrayAccessExtractor);
+		Assert.assertTrue(features.iterator().next().getExtractor() instanceof ArrayAccessComparandExtractor);
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class FeatureCollectorTest {
 		NullCheck nullCheck = match.get();
 		List<Feature> features = this.featureCollector.collect(nullCheck);
 		Assert.assertEquals(features.size(), 1);
-		Assert.assertTrue(features.iterator().next().getExtractor() instanceof EnclosedExtractor);
+		Assert.assertTrue(features.iterator().next().getExtractor() instanceof EnclosedComparandExtractor);
 	}
 
 	@Test
@@ -92,7 +92,7 @@ public class FeatureCollectorTest {
 		NullCheck nullCheck = match.get();
 		List<Feature> features = this.featureCollector.collect(nullCheck);
 		Assert.assertEquals(features.size(), 1);
-		Assert.assertTrue(features.iterator().next().getExtractor() instanceof CastExtractor);
+		Assert.assertTrue(features.iterator().next().getExtractor() instanceof CastComparandExtractor);
 	}
 
 	@Test
@@ -107,11 +107,11 @@ public class FeatureCollectorTest {
 		List<Feature> features = this.featureCollector.collect(nullCheck);
 		Assert.assertEquals(features.size(), 2);
 		Assert.assertTrue(features.stream().anyMatch(
-				feature -> feature.getExtractor() instanceof NameExtractor));
+				feature -> feature.getExtractor() instanceof NameComparandExtractor));
 		Assert.assertTrue(features
 				.stream()
 				.anyMatch(
-						feature -> feature.getExtractor() instanceof LocalVariableExtractor));
+						feature -> feature.getExtractor() instanceof LocalVariableComparandExtractor));
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class FeatureCollectorTest {
 		NullCheck nullCheck = match.get();
 		List<Feature> features = this.featureCollector.collect(nullCheck);
 		Assert.assertEquals(features.size(), 1);
-		Assert.assertTrue(features.iterator().next().getExtractor() instanceof MethodCallExtractor);
+		Assert.assertTrue(features.iterator().next().getExtractor() instanceof MethodCallComparandExtractor);
 	}
 
 }

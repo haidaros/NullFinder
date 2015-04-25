@@ -13,17 +13,15 @@ public abstract class AbstractDependentExtractor extends AbstractExtractor {
 	}
 
 	@Override
-	public List<Feature> extract(NullCheck nullCheck, List<Feature> features) {
-		if (!this.meetsDependencies(nullCheck, features)) {
+	public List<Feature> extract(NullCheck nullCheck) {
+		if (!this.meetsDependencies(nullCheck)) {
 			return Collections.emptyList();
 		}
-		return this.safeExtract(nullCheck, features);
+		return this.safeExtract(nullCheck);
 	}
 
-	abstract protected boolean meetsDependencies(NullCheck nullCheck,
-			List<Feature> features);
+	abstract protected boolean meetsDependencies(NullCheck nullCheck);
 
-	abstract protected List<Feature> safeExtract(NullCheck nullCheck,
-			List<Feature> features);
+	abstract protected List<Feature> safeExtract(NullCheck nullCheck);
 
 }

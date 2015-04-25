@@ -9,12 +9,16 @@ import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
+import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 
+/**
+ * Tries to find a declaration
+ */
 public class LocalVariableComparandExtractor extends
 		AbstractVariableComparandDependentExtractor {
 
@@ -23,12 +27,10 @@ public class LocalVariableComparandExtractor extends
 	}
 
 	@Override
-	protected List<Feature> safeExtract(NullCheck nullCheck,
-			List<Feature> features) {
+	protected List<Feature> safeExtract(NullCheck nullCheck) {
 		// TODO there is some dirty stuff going on here...
-		Feature variableFeature = this.extractVariableFeature(nullCheck,
-				features);
-		Node variableNode = this.extractVariableNode(nullCheck, features);
+		Feature variableFeature = this.extractVariableFeature(nullCheck);
+		Node variableNode = this.extractVariableNode(nullCheck);
 		com.github.javaparser.ast.Node current = nullCheck.getNode()
 				.getJavaParserNode().getParentNode();
 		com.github.javaparser.ast.Node stop = nullCheck.getNode()
@@ -94,6 +96,9 @@ public class LocalVariableComparandExtractor extends
 						}
 					}
 				}
+			}
+			if (current instanceof BodyDeclaration) {
+				break;
 			}
 			stop = current;
 			current = current.getParentNode();

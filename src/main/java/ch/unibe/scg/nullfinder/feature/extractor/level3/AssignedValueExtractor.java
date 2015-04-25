@@ -18,21 +18,20 @@ public class AssignedValueExtractor extends AbstractDependentExtractor {
 		super(3);
 	}
 
-	protected Feature extractAssignmentFeature(NullCheck nullCheck,
-			List<Feature> features) {
-		assert this.meetsDependencies(nullCheck, features);
-		return features
+	protected Feature extractAssignmentFeature(NullCheck nullCheck) {
+		assert this.meetsDependencies(nullCheck);
+		return nullCheck
+				.getFeatures()
 				.stream()
 				.filter(this::isExtractedByVariableComparandAssignmentExtractor)
 				.findFirst().get();
 	}
 
-	protected Node extractAssignmentNode(NullCheck nullCheck,
-			List<Feature> features) {
-		assert this.meetsDependencies(nullCheck, features);
-		List<Node> assignmentNodes = this
-				.extractAssignmentFeature(nullCheck, features).getReasons()
-				.stream().filter(reason -> reason instanceof NodeReason)
+	protected Node extractAssignmentNode(NullCheck nullCheck) {
+		assert this.meetsDependencies(nullCheck);
+		List<Node> assignmentNodes = this.extractAssignmentFeature(nullCheck)
+				.getReasons().stream()
+				.filter(reason -> reason instanceof NodeReason)
 				.map(reason -> (NodeReason) reason)
 				.map(nodeReason -> nodeReason.getNode())
 				.collect(Collectors.toList());
@@ -46,21 +45,19 @@ public class AssignedValueExtractor extends AbstractDependentExtractor {
 	}
 
 	@Override
-	protected boolean meetsDependencies(NullCheck nullCheck,
-			List<Feature> features) {
-		return features
+	protected boolean meetsDependencies(NullCheck nullCheck) {
+		return nullCheck
+				.getFeatures()
 				.stream()
 				.filter(this::isExtractedByVariableComparandAssignmentExtractor)
 				.count() == 1;
 	}
 
 	@Override
-	protected List<Feature> safeExtract(NullCheck nullCheck,
-			List<Feature> features) {
-		Feature assignmentFeature = this.extractAssignmentFeature(nullCheck,
-				features);
+	protected List<Feature> safeExtract(NullCheck nullCheck) {
+		Feature assignmentFeature = this.extractAssignmentFeature(nullCheck);
 		com.github.javaparser.ast.Node value = ((AssignExpr) this
-				.extractAssignmentNode(nullCheck, features).getJavaParserNode())
+				.extractAssignmentNode(nullCheck).getJavaParserNode())
 				.getValue();
 		return this.getFeatures(this
 				.getFeatureBuilder(nullCheck, value.getClass().getName())

@@ -1,165 +1,60 @@
 package ch.unibe.scg.nullfinder.jpa.type;
 
-import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.type.IntegerType;
-import org.hibernate.type.StringType;
-import org.hibernate.type.Type;
-import org.hibernate.usertype.CompositeUserType;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.type.AbstractSingleColumnStandardBasicType;
+import org.hibernate.type.DiscriminatorType;
+import org.hibernate.type.descriptor.sql.VarcharTypeDescriptor;
 
 import ch.unibe.scg.nullfinder.feature.extractor.IExtractor;
+import ch.unibe.scg.nullfinder.jpa.type.descriptor.java.ExtractorTypeDescriptor;
 
-public class ExtractorType implements CompositeUserType {
+public class ExtractorType extends
+		AbstractSingleColumnStandardBasicType<IExtractor> implements
+		DiscriminatorType<IExtractor> {
 
-	protected static final String[] PROPERTY_NAMES = new String[] {
-			"className", "level" };
-	protected static final Type[] PROPERTY_TYPES = new Type[] {
-			StringType.INSTANCE, IntegerType.INSTANCE };
+	private static final long serialVersionUID = 1L;
 
-	@Override
-	public String[] getPropertyNames() {
-		return ExtractorType.PROPERTY_NAMES;
+	public static final ExtractorType INSTANCE = new ExtractorType();
+
+	public ExtractorType() {
+		super(VarcharTypeDescriptor.INSTANCE, ExtractorTypeDescriptor.INSTANCE);
 	}
 
 	@Override
-	public Type[] getPropertyTypes() {
-		return ExtractorType.PROPERTY_TYPES;
+	public String toString(IExtractor value) throws HibernateException {
+		return value.toString();
 	}
 
 	@Override
-	public Object getPropertyValue(Object component, int property)
-			throws HibernateException {
-		if (property < 0 || property >= this.getPropertyNames().length) {
-			throw new HibernateException("'property' must be >= 0 and < "
-					+ this.getPropertyNames().length);
-		}
-		IExtractor extractor = (IExtractor) component;
-		if (property == 0) {
-			return extractor.getClass().getName();
-		}
-		if (property == 1) {
-			return extractor.getLevel();
-		}
-		throw new HibernateException("How the hell did you get here?!");
-	}
-
-	@Override
-	public void setPropertyValue(Object component, int property, Object value)
-			throws HibernateException {
-		if (property < 0 || property >= this.getPropertyNames().length) {
-			throw new HibernateException("'property' must be >= 0 and < "
-					+ this.getPropertyNames().length);
-		}
-		if (property == 0) {
-			throw new HibernateException(
-					"Can not set the class of an existing extractor");
-		}
-		IExtractor extractor = (IExtractor) component;
-		if (!Integer.class.isInstance(value)) {
-			throw new HibernateException("Value for 'level' must be an integer");
-		}
-		int integer = (int) value;
-		if (property == 1) {
-			extractor.setLevel(integer);
-		}
-	}
-
-	@Override
-	public Class<?> returnedClass() {
-		return IExtractor.class;
-	}
-
-	@Override
-	public boolean equals(Object x, Object y) throws HibernateException {
-		if (x == null || y == null) {
-			return false;
-		}
-		if (!x.getClass().equals(y.getClass())) {
-			return false;
-		}
-		return this.hashCode(x) == this.hashCode(y);
-	}
-
-	@Override
-	public int hashCode(Object x) throws HibernateException {
-		IExtractor extractor = (IExtractor) x;
-		return String.join(" ", "" + extractor.getLevel()).hashCode();
-	}
-
-	@Override
-	public Object nullSafeGet(ResultSet rs, String[] names,
-			SessionImplementor session, Object owner)
-			throws HibernateException, SQLException {
-		String className = rs.getString(names[0]);
-		Integer level = (Integer) rs.getObject(names[1]);
-		return this.newExtractor(this.getExtractorClass(className), level);
-	}
-
-	@Override
-	public void nullSafeSet(PreparedStatement st, Object value, int index,
-			SessionImplementor session) throws HibernateException, SQLException {
-		IExtractor extractor = (IExtractor) value;
-		st.setString(index, extractor.getClass().getName());
-		st.setInt(index + 1, extractor.getLevel());
-	}
-
-	@Override
-	public Object deepCopy(Object value) throws HibernateException {
-		IExtractor extractor = (IExtractor) value;
-		return this.newExtractor(extractor.getClass(), extractor.getLevel());
-	}
-
-	@Override
-	public boolean isMutable() {
-		return true;
-	}
-
-	@Override
-	public Serializable disassemble(Object value, SessionImplementor session)
-			throws HibernateException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Object assemble(Serializable cached, SessionImplementor session,
-			Object owner) throws HibernateException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Object replace(Object original, Object target,
-			SessionImplementor session, Object owner) throws HibernateException {
-		IExtractor originalExtractor = (IExtractor) original;
-		IExtractor targetExtractor = (IExtractor) target;
-		targetExtractor.setLevel(originalExtractor.getLevel());
-		return targetExtractor;
-	}
-
-	@SuppressWarnings("unchecked")
-	protected Class<? extends IExtractor> getExtractorClass(String className)
-			throws HibernateException {
+	public IExtractor fromStringValue(String string) throws HibernateException {
 		try {
-			return (Class<? extends IExtractor>) Class.forName(className);
-		} catch (ClassNotFoundException exception) {
-			throw new HibernateException(exception);
-		}
-	}
-
-	protected IExtractor newExtractor(Class<? extends IExtractor> cls, int level)
-			throws HibernateException {
-		try {
+			@SuppressWarnings("unchecked")
+			Class<? extends IExtractor> cls = (Class<? extends IExtractor>) Class
+					.forName(string);
 			IExtractor extractor = cls.newInstance();
-			extractor.setLevel(level);
 			return extractor;
-		} catch (SecurityException | InstantiationException
-				| IllegalAccessException | IllegalArgumentException exception) {
+		} catch (ClassNotFoundException | SecurityException
+				| InstantiationException | IllegalAccessException
+				| IllegalArgumentException exception) {
 			throw new HibernateException(exception);
 		}
+	}
+
+	@Override
+	public String getName() {
+		return "extractor";
+	}
+
+	@Override
+	public IExtractor stringToObject(String xml) throws Exception {
+		return this.fromStringValue(xml);
+	}
+
+	@Override
+	public String objectToSQLString(IExtractor value, Dialect dialect)
+			throws Exception {
+		return "\'" + this.toString(value) + "\'";
 	}
 
 }

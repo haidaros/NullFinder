@@ -21,11 +21,6 @@ public abstract class AbstractExtractor implements IExtractor {
 		return this.level;
 	}
 
-	@Override
-	public void setLevel(int level) {
-		this.level = level;
-	}
-
 	protected FeatureBuilder getFeatureBuilder(NullCheck nullCheck,
 			String manifestation) {
 		return (new NullCheckBuilder(nullCheck))

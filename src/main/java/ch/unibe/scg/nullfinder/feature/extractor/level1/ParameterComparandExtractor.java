@@ -20,12 +20,10 @@ public class ParameterComparandExtractor extends
 	}
 
 	@Override
-	protected List<Feature> safeExtract(NullCheck nullCheck,
-			List<Feature> features) {
+	protected List<Feature> safeExtract(NullCheck nullCheck) {
 		// TODO there is some dirty stuff going on here...
-		Feature variableFeature = this.extractVariableFeature(nullCheck,
-				features);
-		Node variableNode = this.extractVariableNode(nullCheck, features);
+		Feature variableFeature = this.extractVariableFeature(nullCheck);
+		Node variableNode = this.extractVariableNode(nullCheck);
 		com.github.javaparser.ast.Node current = nullCheck.getNode()
 				.getJavaParserNode().getParentNode();
 		// haha, a null nullCheck!
@@ -62,6 +60,10 @@ public class ParameterComparandExtractor extends
 						// noop
 					}
 				}
+			}
+			if (current instanceof MethodDeclaration
+					|| current instanceof ConstructorDeclaration) {
+				break;
 			}
 			current = current.getParentNode();
 		}

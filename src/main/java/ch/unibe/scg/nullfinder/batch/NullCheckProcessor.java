@@ -49,7 +49,7 @@ public class NullCheckProcessor implements
 		List<Feature> features = new ArrayList<>();
 		for (Set<IExtractor> levelExtractors : this.extractors.values()) {
 			for (IExtractor extractor : levelExtractors) {
-				features.addAll(extractor.extract(nullCheck, features));
+				features.addAll(extractor.extract(nullCheck));
 			}
 		}
 		return features;

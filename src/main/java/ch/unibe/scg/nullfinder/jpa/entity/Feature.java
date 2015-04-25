@@ -13,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
 
 import ch.unibe.scg.nullfinder.feature.extractor.IExtractor;
@@ -31,9 +30,7 @@ public class Feature {
 	protected List<Reason> reasons;
 	@OneToMany(mappedBy = "reasonFeature")
 	protected List<FeatureReason> featureReasons;
-	@Columns(columns = {
-			@Column(name = "extractorClassName", nullable = false),
-			@Column(name = "extractorLevel", nullable = false) })
+	@Column(name = "extractor", nullable = false)
 	@Type(type = "ch.unibe.scg.nullfinder.jpa.type.ExtractorType")
 	protected IExtractor extractor;
 	@Column(name = "manifestation", nullable = false)

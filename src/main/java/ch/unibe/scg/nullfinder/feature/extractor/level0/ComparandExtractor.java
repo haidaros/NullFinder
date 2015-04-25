@@ -8,6 +8,9 @@ import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 import com.github.javaparser.ast.expr.BinaryExpr;
 
+/**
+ * Extract the class of the node "null" is compared against.
+ */
 public class ComparandExtractor extends AbstractExtractor {
 
 	public ComparandExtractor() {
@@ -15,7 +18,7 @@ public class ComparandExtractor extends AbstractExtractor {
 	}
 
 	@Override
-	public List<Feature> extract(NullCheck nullCheck, List<Feature> features) {
+	public List<Feature> extract(NullCheck nullCheck) {
 		assert nullCheck.getNode().getJavaParserNode().getParentNode() instanceof BinaryExpr;
 		BinaryExpr binary = (BinaryExpr) nullCheck.getNode()
 				.getJavaParserNode().getParentNode();

@@ -20,20 +20,18 @@ public abstract class AbstractVariableComparandDependentExtractor extends
 		super(level);
 	}
 
-	protected Feature extractVariableFeature(NullCheck nullCheck,
-			List<Feature> features) {
-		assert this.meetsDependencies(nullCheck, features);
-		return features.stream()
+	protected Feature extractVariableFeature(NullCheck nullCheck) {
+		assert this.meetsDependencies(nullCheck);
+		return nullCheck.getFeatures().stream()
 				.filter(this::isExtractedByVariableComparandExtractor)
 				.findFirst().get();
 	}
 
-	protected Node extractVariableNode(NullCheck nullCheck,
-			List<Feature> features) {
-		assert this.meetsDependencies(nullCheck, features);
-		List<Node> variableNodes = this
-				.extractVariableFeature(nullCheck, features).getReasons()
-				.stream().filter(reason -> reason instanceof NodeReason)
+	protected Node extractVariableNode(NullCheck nullCheck) {
+		assert this.meetsDependencies(nullCheck);
+		List<Node> variableNodes = this.extractVariableFeature(nullCheck)
+				.getReasons().stream()
+				.filter(reason -> reason instanceof NodeReason)
 				.map(reason -> (NodeReason) reason)
 				.map(nodeReason -> nodeReason.getNode())
 				.collect(Collectors.toList());
@@ -58,9 +56,8 @@ public abstract class AbstractVariableComparandDependentExtractor extends
 	}
 
 	@Override
-	protected boolean meetsDependencies(NullCheck nullCheck,
-			List<Feature> features) {
-		return features.stream()
+	protected boolean meetsDependencies(NullCheck nullCheck) {
+		return nullCheck.getFeatures().stream()
 				.filter(this::isExtractedByVariableComparandExtractor).count() == 1;
 	}
 
