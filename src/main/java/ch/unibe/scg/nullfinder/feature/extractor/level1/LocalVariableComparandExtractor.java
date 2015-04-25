@@ -1,10 +1,10 @@
 package ch.unibe.scg.nullfinder.feature.extractor.level1;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import ch.unibe.scg.nullfinder.ast.ConstrainedVisitor;
 import ch.unibe.scg.nullfinder.feature.extractor.AbstractVariableComparandDependentExtractor;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.Node;
@@ -12,10 +12,6 @@ import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
-import com.github.javaparser.ast.stmt.ForStmt;
 
 /**
  * Tries to find the declaration of a local variable with the name of the
@@ -26,6 +22,43 @@ import com.github.javaparser.ast.stmt.ForStmt;
  */
 public class LocalVariableComparandExtractor extends
 		AbstractVariableComparandDependentExtractor {
+
+	public static class ExtractingVisitor extends ConstrainedVisitor<String> {
+
+		protected com.github.javaparser.ast.Node stop;
+		protected List<VariableDeclarator> variableDeclarators;
+
+		public ExtractingVisitor(com.github.javaparser.ast.Node stop) {
+			super();
+			this.stop = stop;
+			this.variableDeclarators = new ArrayList<>();
+		}
+
+		public List<VariableDeclarator> getVariableDeclarators() {
+			return this.variableDeclarators;
+		}
+
+		@Override
+		public void visit(VariableDeclarator variableDeclarator, String name) {
+			if (name.equals(variableDeclarator.getId().getName())) {
+				this.variableDeclarators.add(variableDeclarator);
+			}
+			super.visit(variableDeclarator, name);
+		}
+
+		@Override
+		protected boolean shouldAscendFrom(com.github.javaparser.ast.Node node,
+				String name) {
+			return !(node instanceof BodyDeclaration);
+		}
+
+		@Override
+		protected boolean shouldDescendInto(
+				com.github.javaparser.ast.Node node, String name) {
+			return node != this.stop;
+		}
+
+	}
 
 	public LocalVariableComparandExtractor() {
 		super(1);
@@ -42,105 +75,22 @@ public class LocalVariableComparandExtractor extends
 	 */
 	@Override
 	protected List<Feature> safeExtract(NullCheck nullCheck) {
-		// TODO there is some dirty stuff going on here...
 		Feature variableFeature = this.extractVariableFeature(nullCheck);
 		Node variableNode = this.extractVariableNode(nullCheck);
-		com.github.javaparser.ast.Node current = nullCheck.getNode()
-				.getJavaParserNode().getParentNode();
+		String variableName = this.getVariableName(variableNode);
 		com.github.javaparser.ast.Node stop = nullCheck.getNode()
 				.getJavaParserNode();
-		// haha, a null nullCheck!
-		while (current != null) {
-			List<com.github.javaparser.ast.Node> children = current
-					.getChildrenNodes();
-			if (current instanceof ForStmt) {
-				// reorder children
-				ForStmt forStatement = (ForStmt) current;
-				children = new ArrayList<>();
-				if (forStatement.getInit() != null) {
-					// fuck you...
-					children.addAll(forStatement.getInit());
-				}
-				children.add(forStatement.getCompare());
-				if (forStatement.getUpdate() != null) {
-					// ...and fuck you
-					children.addAll(forStatement.getUpdate());
-				}
-				children.add(forStatement.getBody());
-			}
-			for (com.github.javaparser.ast.Node child : children) {
-				if (child == stop) {
-					break;
-				}
-				if (child instanceof VariableDeclarationExpr) {
-					try {
-						VariableDeclarator variableDeclarator = this
-								.findDeclaration(
-										(VariableDeclarationExpr) child,
-										variableNode);
-						return Arrays
-								.asList(this
-										.getFeatureBuilder(
-												nullCheck,
-												VariableDeclarationExpr.class
-														.getName())
-										.addNodeReason(variableDeclarator)
-										.addFeatureReason(variableFeature)
-										.getEntity());
-					} catch (DeclarationNotFoundException exception) {
-						// noop
-					}
-				} else if (child instanceof ExpressionStmt) {
-					Expression expression = ((ExpressionStmt) child)
-							.getExpression();
-					if (expression instanceof VariableDeclarationExpr) {
-						try {
-							VariableDeclarator variableDeclarator = this
-									.findDeclaration(
-											(VariableDeclarationExpr) expression,
-											variableNode);
-							return Arrays.asList(this
-									.getFeatureBuilder(nullCheck,
-											ExpressionStmt.class.getName())
-									.addNodeReason(variableDeclarator)
-									.addFeatureReason(variableFeature)
-									.getEntity());
-						} catch (DeclarationNotFoundException exception) {
-							// noop
-						}
-					}
-				}
-			}
-			if (current instanceof BodyDeclaration) {
-				break;
-			}
-			stop = current;
-			current = current.getParentNode();
-		}
-		return Collections.emptyList();
-	}
-
-	/**
-	 * Finds the declaration of the variable described by the specified node.
-	 *
-	 * @param declaration
-	 *            The declaration to search
-	 * @param variableExtractorNode
-	 *            The variable described to find
-	 * @return The variable declarator
-	 * @throws DeclarationNotFoundException
-	 *             Thrown if no declaration could be found
-	 */
-	protected VariableDeclarator findDeclaration(
-			VariableDeclarationExpr declaration, Node variableExtractorNode)
-			throws DeclarationNotFoundException {
-		for (VariableDeclarator variable : declaration.getVars()) {
-			if (this.getVariableName(variableExtractorNode).equals(
-					variable.getId().getName())) {
-				return variable;
-			}
-		}
-		throw new DeclarationNotFoundException(variableExtractorNode);
+		ExtractingVisitor extractingVisitor = new ExtractingVisitor(stop);
+		extractingVisitor.startOn(stop, variableName);
+		return extractingVisitor
+				.getVariableDeclarators()
+				.stream()
+				.map(variableDeclarator -> this
+						.getFeatureBuilder(nullCheck,
+								variableDeclarator.getClass().getName())
+						.addNodeReason(variableDeclarator)
+						.addFeatureReason(variableFeature).getEntity())
+				.collect(Collectors.toList());
 	}
 
 }

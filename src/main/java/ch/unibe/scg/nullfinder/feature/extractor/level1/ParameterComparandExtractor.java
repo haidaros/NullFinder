@@ -1,14 +1,16 @@
 package ch.unibe.scg.nullfinder.feature.extractor.level1;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import ch.unibe.scg.nullfinder.ast.ConstrainedVisitor;
 import ch.unibe.scg.nullfinder.feature.extractor.AbstractVariableComparandDependentExtractor;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
+import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
@@ -22,6 +24,50 @@ import com.github.javaparser.ast.body.Parameter;
  */
 public class ParameterComparandExtractor extends
 		AbstractVariableComparandDependentExtractor {
+
+	public static class ExtractingVisitor extends ConstrainedVisitor<String> {
+
+		protected List<Parameter> parameters;
+		protected BodyDeclaration bodyDeclaration;
+
+		public ExtractingVisitor() {
+			super();
+			this.parameters = new ArrayList<>();
+		}
+
+		public List<Parameter> getParameters() {
+			return this.parameters;
+		}
+
+		@Override
+		public void visit(Parameter parameter, String name) {
+			if (name.equals(parameter.getId().getName())) {
+				this.parameters.add(parameter);
+			}
+			super.visit(parameter, name);
+		}
+
+		@Override
+		protected boolean shouldAscendFrom(com.github.javaparser.ast.Node node,
+				String name) {
+			if (node instanceof MethodDeclaration
+					|| node instanceof ConstructorDeclaration) {
+				this.bodyDeclaration = (BodyDeclaration) node;
+				return false;
+			}
+			return true;
+		}
+
+		@Override
+		protected boolean shouldDescendInto(
+				com.github.javaparser.ast.Node node, String name) {
+			if (node instanceof BodyDeclaration) {
+				return node == this.bodyDeclaration;
+			}
+			return false;
+		}
+
+	}
 
 	public ParameterComparandExtractor() {
 		super(1);
@@ -38,64 +84,22 @@ public class ParameterComparandExtractor extends
 	 */
 	@Override
 	protected List<Feature> safeExtract(NullCheck nullCheck) {
-		// TODO there is some dirty stuff going on here...
 		Feature variableFeature = this.extractVariableFeature(nullCheck);
 		Node variableNode = this.extractVariableNode(nullCheck);
-		com.github.javaparser.ast.Node current = nullCheck.getNode()
-				.getJavaParserNode().getParentNode();
-		// haha, a null nullCheck!
-		while (current != null) {
-			if (current instanceof MethodDeclaration) {
-				MethodDeclaration method = (MethodDeclaration) current;
-				// parameters are null for methods taking no arguments
-				if (method.getParameters() != null) {
-					try {
-						Parameter parameter = this.findDeclaration(
-								method.getParameters(), variableNode);
-						return Arrays.asList(this
-								.getFeatureBuilder(nullCheck,
-										MethodDeclaration.class.getName())
-								.addNodeReason(parameter)
-								.addFeatureReason(variableFeature).getEntity());
-					} catch (DeclarationNotFoundException exception) {
-						// noop
-					}
-				}
-			} else if (current instanceof ConstructorDeclaration) {
-				ConstructorDeclaration constructor = (ConstructorDeclaration) current;
-				// parameters are null for constructors taking no arguments
-				if (constructor.getParameters() != null) {
-					try {
-						Parameter parameter = this.findDeclaration(
-								constructor.getParameters(), variableNode);
-						return Arrays.asList(this
-								.getFeatureBuilder(nullCheck,
-										ConstructorDeclaration.class.getName())
-								.addNodeReason(parameter)
-								.addFeatureReason(variableFeature).getEntity());
-					} catch (DeclarationNotFoundException exception) {
-						// noop
-					}
-				}
-			}
-			if (current instanceof MethodDeclaration
-					|| current instanceof ConstructorDeclaration) {
-				break;
-			}
-			current = current.getParentNode();
-		}
-		return Collections.emptyList();
-	}
-
-	protected Parameter findDeclaration(List<Parameter> parameters,
-			Node variableExtractorNode) throws DeclarationNotFoundException {
-		for (Parameter parameter : parameters) {
-			if (this.getVariableName(variableExtractorNode).equals(
-					parameter.getId().getName())) {
-				return parameter;
-			}
-		}
-		throw new DeclarationNotFoundException(variableExtractorNode);
+		String variableName = this.getVariableName(variableNode);
+		com.github.javaparser.ast.Node stop = nullCheck.getNode()
+				.getJavaParserNode();
+		ExtractingVisitor extractingVisitor = new ExtractingVisitor();
+		extractingVisitor.startOn(stop, variableName);
+		return extractingVisitor
+				.getParameters()
+				.stream()
+				.map(parameter -> this
+						.getFeatureBuilder(nullCheck,
+								parameter.getClass().getName())
+						.addNodeReason(parameter)
+						.addFeatureReason(variableFeature).getEntity())
+				.collect(Collectors.toList());
 	}
 
 }

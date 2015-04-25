@@ -11,6 +11,7 @@ import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NodeReason;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
 
 /**
@@ -90,13 +91,26 @@ public class AssignedValueExtractor extends AbstractDependentExtractor {
 		return this
 				.extractAssignmentNodes(feature)
 				.stream()
-				.map(node -> ((AssignExpr) node.getJavaParserNode()).getValue())
+				.map(this::getAssignedValue)
 				.map(value -> this
 						.getFeatureBuilder(feature.getNullCheck(),
 								value.getClass().getName())
 						.addFeatureReason(feature).addNodeReason(value)
 						.getEntity());
+	}
 
+	protected com.github.javaparser.ast.Node getAssignedValue(Node node) {
+		com.github.javaparser.ast.Node javaParserNode = node
+				.getJavaParserNode();
+		if (javaParserNode instanceof AssignExpr) {
+			return ((AssignExpr) javaParserNode).getValue();
+		}
+		if (javaParserNode instanceof VariableDeclarator) {
+			return ((VariableDeclarator) javaParserNode).getInit();
+		}
+		throw new RuntimeException(
+				"VariableComparandAssignmentExtractor extracted non-compatible node type. Should be one of AssignExpr or VariableDeclarator, was "
+						+ javaParserNode.getClass().getName());
 	}
 
 	/**

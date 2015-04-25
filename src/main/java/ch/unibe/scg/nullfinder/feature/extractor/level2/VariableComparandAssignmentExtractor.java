@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ch.unibe.scg.nullfinder.ast.ConstrainedVisitor;
 import ch.unibe.scg.nullfinder.feature.extractor.AbstractVariableComparandDependentExtractor;
 import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
-import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.BodyDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
 
 /**
@@ -22,6 +23,52 @@ import com.github.javaparser.ast.expr.AssignExpr;
  */
 public class VariableComparandAssignmentExtractor extends
 		AbstractVariableComparandDependentExtractor {
+
+	public static class ExtractingVisitor extends ConstrainedVisitor<String> {
+
+		protected com.github.javaparser.ast.Node stop;
+		protected List<com.github.javaparser.ast.Node> assignments;
+
+		public ExtractingVisitor(com.github.javaparser.ast.Node stop) {
+			super();
+			this.stop = stop;
+			this.assignments = new ArrayList<>();
+		}
+
+		public List<com.github.javaparser.ast.Node> getAssignments() {
+			return this.assignments;
+		}
+
+		@Override
+		public void visit(VariableDeclarator variableDeclarator, String name) {
+			if (variableDeclarator.getInit() != null
+					&& name.equals(variableDeclarator.getId().getName())) {
+				this.assignments.add(variableDeclarator);
+			}
+			super.visit(variableDeclarator, name);
+		}
+
+		@Override
+		public void visit(AssignExpr assignment, String name) {
+			if (name.equals(assignment.getTarget().toString())) {
+				this.assignments.add(assignment);
+			}
+			super.visit(assignment, name);
+		}
+
+		@Override
+		protected boolean shouldAscendFrom(com.github.javaparser.ast.Node node,
+				String name) {
+			return !(node instanceof BodyDeclaration);
+		}
+
+		@Override
+		protected boolean shouldDescendInto(
+				com.github.javaparser.ast.Node node, String name) {
+			return node != this.stop;
+		}
+
+	}
 
 	public VariableComparandAssignmentExtractor() {
 		super(2);
@@ -40,39 +87,19 @@ public class VariableComparandAssignmentExtractor extends
 	protected List<Feature> safeExtract(NullCheck nullCheck) {
 		Feature variableFeature = this.extractVariableFeature(nullCheck);
 		Node variableNode = this.extractVariableNode(nullCheck);
-		com.github.javaparser.ast.Node current = nullCheck.getNode()
-				.getJavaParserNode().getParentNode();
+		String variableName = this.getVariableName(variableNode);
 		com.github.javaparser.ast.Node stop = nullCheck.getNode()
 				.getJavaParserNode();
-		List<AssignExpr> assignments = new ArrayList<>();
-		while (current != null) {
-			List<com.github.javaparser.ast.Node> children = current
-					.getChildrenNodes();
-			for (com.github.javaparser.ast.Node child : children) {
-				if (child == stop) {
-					break;
-				}
-				if (child instanceof AssignExpr) {
-					AssignExpr assignment = (AssignExpr) child;
-					if (assignment.getTarget().toString()
-							.equals(this.getVariableName(variableNode))) {
-						assignments.add(assignment);
-					}
-				}
-			}
-			if (current instanceof MethodDeclaration
-					|| current instanceof ConstructorDeclaration) {
-				break;
-			}
-			stop = current;
-			current = current.getParentNode();
-		}
-		// TODO is there a useful non-empty manifestation?
-		return assignments
+		ExtractingVisitor extractingVisitor = new ExtractingVisitor(stop);
+		extractingVisitor.startOn(stop, variableName);
+		return extractingVisitor
+				.getAssignments()
 				.stream()
-				.map(assignment -> this.getFeatureBuilder(nullCheck, "")
-						.addFeatureReason(variableFeature)
-						.addNodeReason(assignment).getEntity())
+				.map(assignment -> this
+						.getFeatureBuilder(nullCheck,
+								assignment.getClass().getName())
+						.addNodeReason(assignment)
+						.addFeatureReason(variableFeature).getEntity())
 				.collect(Collectors.toList());
 	}
 

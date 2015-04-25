@@ -23,7 +23,7 @@ public class ExtractorType extends
 
 	@Override
 	public String toString(IExtractor value) throws HibernateException {
-		return value.toString();
+		return value.getClass().getName();
 	}
 
 	@Override
