@@ -12,11 +12,65 @@ import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
+import com.github.javaparser.ast.stmt.AssertStmt;
+import com.github.javaparser.ast.stmt.DoStmt;
+import com.github.javaparser.ast.stmt.ForStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.WhileStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 @Component
 public class CompilationUnitProcessor implements
 		ItemProcessor<CompilationUnit, List<NullCheck>> {
+
+	public static class ConditionalVisitor extends
+			VoidVisitorAdapter<CompilationUnit> {
+
+		protected Integer conditionals;
+
+		public ConditionalVisitor() {
+			super();
+			this.conditionals = 0;
+		}
+
+		public Integer getConditionals() {
+			return this.conditionals;
+		}
+
+		@Override
+		public void visit(IfStmt javaParserNode, CompilationUnit compilationUnit) {
+			super.visit(javaParserNode, compilationUnit);
+			this.conditionals = this.conditionals + 1;
+		}
+
+		@Override
+		public void visit(WhileStmt javaParserNode,
+				CompilationUnit compilationUnit) {
+			super.visit(javaParserNode, compilationUnit);
+			this.conditionals = this.conditionals + 1;
+		}
+
+		@Override
+		public void visit(DoStmt javaParserNode, CompilationUnit compilationUnit) {
+			super.visit(javaParserNode, compilationUnit);
+			this.conditionals = this.conditionals + 1;
+		}
+
+		@Override
+		public void visit(ForStmt javaParserNode,
+				CompilationUnit compilationUnit) {
+			super.visit(javaParserNode, compilationUnit);
+			this.conditionals = this.conditionals + 1;
+		}
+
+		@Override
+		public void visit(AssertStmt javaParserNode,
+				CompilationUnit compilationUnit) {
+			super.visit(javaParserNode, compilationUnit);
+			this.conditionals = this.conditionals + 1;
+		}
+
+	}
 
 	public static class NullLiteralVisitor extends
 			VoidVisitorAdapter<CompilationUnit> {
@@ -51,10 +105,17 @@ public class CompilationUnitProcessor implements
 	public List<NullCheck> process(CompilationUnit compilationUnit)
 			throws UnvisitableException {
 		try {
-			NullLiteralVisitor visitor = new NullLiteralVisitor();
-			visitor.visit(compilationUnit.getJavaParserCompilationUnit(),
-					compilationUnit);
-			return visitor.getNullChecks();
+			com.github.javaparser.ast.CompilationUnit javaParserCompilationUnit = compilationUnit
+					.getJavaParserCompilationUnit();
+			ConditionalVisitor conditionalVisitor = new ConditionalVisitor();
+			conditionalVisitor
+					.visit(javaParserCompilationUnit, compilationUnit);
+			Integer conditionals = conditionalVisitor.getConditionals();
+			compilationUnit.setConditionals(conditionals);
+			NullLiteralVisitor nullLiteralVisitor = new NullLiteralVisitor();
+			nullLiteralVisitor
+					.visit(javaParserCompilationUnit, compilationUnit);
+			return nullLiteralVisitor.getNullChecks();
 		} catch (NullPointerException exception) {
 			// sometimes this happens in the visitor
 			throw new UnvisitableException(compilationUnit, exception);

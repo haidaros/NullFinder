@@ -29,6 +29,8 @@ public class CompilationUnit extends Node {
 	@Column(name = "source", nullable = false)
 	@Lob
 	protected String source;
+	@Column(name = "conditionals", nullable = false)
+	protected Integer conditionals;
 
 	public CompilationUnit(
 			com.github.javaparser.ast.CompilationUnit javaParserCompilationUnit,
@@ -37,6 +39,7 @@ public class CompilationUnit extends Node {
 		this.nodes = new ArrayList<>();
 		this.path = path;
 		this.source = source;
+		this.conditionals = 0;
 	}
 
 	public CompilationUnit(
@@ -99,6 +102,14 @@ public class CompilationUnit extends Node {
 
 	public void setSource(String source) {
 		this.source = source;
+	}
+
+	public Integer getConditionals() {
+		return this.conditionals;
+	}
+
+	public void setConditionals(Integer conditionals) {
+		this.conditionals = conditionals;
 	}
 
 }
