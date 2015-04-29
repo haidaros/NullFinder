@@ -37,10 +37,7 @@
 				<batch:chunk reader="javaSourceReader" processor="nullFinderProcessor"
 					writer="compilationUnitWriter" commit-interval="1" skip-limit="2147483647">
 					<batch:skippable-exception-classes>
-						<batch:include class="java.io.IOException" />
-						<batch:include class="ch.unibe.scg.nullfinder.batch.UnparsableException" />
-						<batch:include
-							class="ch.unibe.scg.nullfinder.batch.UnvisitableException" />
+						<batch:include class="java.lang.Throwable" />
 					</batch:skippable-exception-classes>
 				</batch:chunk>
 			</batch:tasklet>
