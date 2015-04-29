@@ -71,6 +71,7 @@ public class CompilationUnitProcessor implements
 			this.conditionals = this.conditionals + 1;
 		}
 
+		@Override
 		public void visit(ConditionalExpr javaParserNode,
 				CompilationUnit compilationUnit) {
 			super.visit(javaParserNode, compilationUnit);
@@ -123,9 +124,10 @@ public class CompilationUnitProcessor implements
 			nullLiteralVisitor
 					.visit(javaParserCompilationUnit, compilationUnit);
 			return nullLiteralVisitor.getNullChecks();
-		} catch (NullPointerException exception) {
-			// sometimes this happens in the visitor
-			throw new UnvisitableException(compilationUnit, exception);
+		} catch (Throwable throwable) {
+			// visiting may throw NullPointerException | StackOverflowError or
+			// maybe more...
+			throw new UnvisitableException(compilationUnit, throwable);
 		}
 	}
 
