@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 import ch.unibe.scg.nullfinder.jpa.entity.CompilationUnit;
 
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseException;
-import com.github.javaparser.TokenMgrError;
 
 @Component
 public class JavaSourceProcessor implements
@@ -26,8 +24,9 @@ public class JavaSourceProcessor implements
 					javaParserCompilationUnit, javaSourcePath);
 			javaParserCompilationUnit.setData(compilationUnit);
 			return compilationUnit;
-		} catch (ParseException | TokenMgrError | NullPointerException throwable) {
-			// null pointer can happen during parsing...
+		} catch (Throwable throwable) {
+			// parsing may throw ParseException | TokenMgrError |
+			// NullPointerException | StackOverflowError or maybe more...
 			throw new UnparsableException(javaSourcePath, throwable);
 		}
 	}
