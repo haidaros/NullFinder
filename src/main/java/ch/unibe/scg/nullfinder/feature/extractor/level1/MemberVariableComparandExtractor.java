@@ -11,8 +11,8 @@ import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.type.Type;
 
 /**
  * Tries to find the declaration of a member variable with the name of the
@@ -27,7 +27,7 @@ public class MemberVariableComparandExtractor extends
 	public static class ExtractingVisitor extends ConstrainedVisitor<String> {
 
 		protected List<VariableDeclarator> variableDeclarators;
-		protected Type type;
+		protected TypeDeclaration typeDeclaration;
 
 		public ExtractingVisitor() {
 			super();
@@ -40,7 +40,7 @@ public class MemberVariableComparandExtractor extends
 
 		@Override
 		public void visit(VariableDeclarator variableDeclarator, String name) {
-			if (variableDeclarator.getParentNode().getParentNode() instanceof FieldDeclaration
+			if (variableDeclarator.getParentNode() instanceof FieldDeclaration
 					&& name.equals(variableDeclarator.getId().getName())) {
 				this.variableDeclarators.add(variableDeclarator);
 			}
@@ -50,8 +50,8 @@ public class MemberVariableComparandExtractor extends
 		@Override
 		protected boolean shouldAscendFrom(com.github.javaparser.ast.Node node,
 				String name) {
-			if (node instanceof Type) {
-				this.type = (Type) node;
+			if (node instanceof TypeDeclaration) {
+				this.typeDeclaration = (TypeDeclaration) node;
 				return false;
 			}
 			return true;
@@ -60,10 +60,10 @@ public class MemberVariableComparandExtractor extends
 		@Override
 		protected boolean shouldDescendInto(
 				com.github.javaparser.ast.Node node, String name) {
-			if (node instanceof Type) {
-				return node == this.type;
+			if (node instanceof TypeDeclaration) {
+				return node == this.typeDeclaration;
 			}
-			return false;
+			return true;
 		}
 
 	}

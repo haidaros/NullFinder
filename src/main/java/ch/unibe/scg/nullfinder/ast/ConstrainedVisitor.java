@@ -89,8 +89,8 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 public abstract class ConstrainedVisitor<T> extends VoidVisitorAdapter<T> {
 
 	public void startOn(com.github.javaparser.ast.Node node, T argument) {
-		while (node.getParentNode() != null
-				&& this.shouldAscendFrom(node, argument)) {
+		while (this.shouldAscendFrom(node, argument)
+				&& node.getParentNode() != null) {
 			node = node.getParentNode();
 		}
 		try {

@@ -10,10 +10,10 @@ import ch.unibe.scg.nullfinder.jpa.entity.Feature;
 import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
-import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.stmt.BlockStmt;
 
 /**
  * Tries to find the declaration of a parameter with the name of the variable
@@ -28,7 +28,6 @@ public class ParameterComparandExtractor extends
 	public static class ExtractingVisitor extends ConstrainedVisitor<String> {
 
 		protected List<Parameter> parameters;
-		protected BodyDeclaration bodyDeclaration;
 
 		public ExtractingVisitor() {
 			super();
@@ -50,21 +49,13 @@ public class ParameterComparandExtractor extends
 		@Override
 		protected boolean shouldAscendFrom(com.github.javaparser.ast.Node node,
 				String name) {
-			if (node instanceof MethodDeclaration
-					|| node instanceof ConstructorDeclaration) {
-				this.bodyDeclaration = (BodyDeclaration) node;
-				return false;
-			}
-			return true;
+			return !(node instanceof MethodDeclaration || node instanceof ConstructorDeclaration);
 		}
 
 		@Override
 		protected boolean shouldDescendInto(
 				com.github.javaparser.ast.Node node, String name) {
-			if (node instanceof BodyDeclaration) {
-				return node == this.bodyDeclaration;
-			}
-			return false;
+			return !(node instanceof BlockStmt);
 		}
 
 	}

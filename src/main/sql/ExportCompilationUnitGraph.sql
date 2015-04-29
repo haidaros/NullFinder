@@ -1,3 +1,12 @@
+drop function if exists escape_label;
+
+delimiter $$
+create function escape_label(label text) returns text
+begin
+	return replace(replace(label, '>', '&gt;'), '<', '&lt;');
+end $$
+delimiter ;
+
 drop function if exists class_name;
 
 delimiter $$
@@ -106,6 +115,9 @@ begin
 		from Node
 		where Node.compilationUnitId = compilation_unit_id
 		into node_subgraph;
+	if node_subgraph is null then
+		set node_subgraph = '';
+	end if;
 	return export_subgraph(
 		export_node(compilation_unit_node_id, compilation_unit_node_id, '"#ffeeee"'),
 		'',
@@ -124,7 +136,7 @@ begin
 	declare null_check_subgraph text;
 	select concat('Node', node_id)
 		into node_node_id;
-	select concat('<', window, '<br />', beginLine, ':', beginColumn, '-', endLine, ':', endColumn, '>')
+	select concat('<', escape_label(window), '<br />', beginLine, ':', beginColumn, '-', endLine, ':', endColumn, '>')
 		from NodeWithWindowView
 		where id = node_id
 		into node_node_label;
@@ -174,7 +186,7 @@ begin
 	declare reason_subgraph text;
 	select concat('Feature', feature_id)
 		into feature_node_id;
-	select concat('<', class_name(extractor), '<br />', class_name(manifestation), '>')
+	select concat('<', escape_label(class_name(extractor)), '<br />', class_name(manifestation), '>')
 		from Feature
 		where id = feature_id
 		into feature_node_label;

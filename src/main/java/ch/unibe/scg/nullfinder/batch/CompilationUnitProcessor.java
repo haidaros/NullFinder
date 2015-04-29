@@ -11,6 +11,7 @@ import ch.unibe.scg.nullfinder.jpa.entity.Node;
 import ch.unibe.scg.nullfinder.jpa.entity.NullCheck;
 
 import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.ConditionalExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.stmt.AssertStmt;
 import com.github.javaparser.ast.stmt.DoStmt;
@@ -65,6 +66,12 @@ public class CompilationUnitProcessor implements
 
 		@Override
 		public void visit(AssertStmt javaParserNode,
+				CompilationUnit compilationUnit) {
+			super.visit(javaParserNode, compilationUnit);
+			this.conditionals = this.conditionals + 1;
+		}
+
+		public void visit(ConditionalExpr javaParserNode,
 				CompilationUnit compilationUnit) {
 			super.visit(javaParserNode, compilationUnit);
 			this.conditionals = this.conditionals + 1;
